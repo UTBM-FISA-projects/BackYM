@@ -17,3 +17,6 @@ Homestead.yaml
 
 # Storage
 storage
+
+# Database
+database.sqlite
