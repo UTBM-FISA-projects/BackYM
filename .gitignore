@@ -1,0 +1,19 @@
+# Editors
+.idea
+.vscode
+
+# Third party
+/vendor
+
+# Lumen
+Homestead.json
+Homestead.yaml
+
+# Env
+.env
+
+# Tests
+.phpunit.result.cache
+
+# Storage
+storage
