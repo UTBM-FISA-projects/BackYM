@@ -2,9 +2,10 @@
 
 namespace Database\Seeders;
 
+use Database\Factories\DisponibiliteFactory;
 use Illuminate\Database\Seeder;
 
-class DatabaseSeeder extends Seeder
+class DisponibiliteTableSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -13,9 +14,6 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-        $this->call([
-            UtilisateurTableSeeder::class,
-            DisponibiliteTableSeeder::class,
-        ]);
+        DisponibiliteFactory::times(20)->create();
     }
 }
