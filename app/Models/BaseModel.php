@@ -3,8 +3,10 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 
-class BaseModel extends \Illuminate\Database\Eloquent\Model
+class BaseModel extends Model
 {
     use HasFactory;
 
@@ -14,8 +16,8 @@ class BaseModel extends \Illuminate\Database\Eloquent\Model
     {
         parent::__construct($attributes);
 
-        // Récupère le dernier élément du FQN en minuscule, soit la classe en minuscule
-        $class = strtolower(last(explode('\\', get_called_class())));
+        // Récupère la classe depuis son FQN et traduit en snake_case
+        $class = Str::snake(class_basename(get_called_class()));
 
         $this->table = $class;
         $this->primaryKey = "id_$class";
