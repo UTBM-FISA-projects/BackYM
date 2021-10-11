@@ -16,4 +16,11 @@ class Disponibilite extends BaseModel
         'end',
         'id_utilisateur',
     ];
+
+    protected $casts = [
+        'id_disponibilite' => 'integer',
+        'start' => 'datetime',
+        'end' => 'datetime',
+        'id_utilisateur' => 'integer',
+    ];
 }

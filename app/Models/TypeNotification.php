@@ -11,4 +11,10 @@ class TypeNotification extends BaseModel
         'titre',
         'template',
     ];
+
+    protected $casts = [
+        'id_type_notification' => 'integer',
+        'titre' => 'string',
+        'template' => 'string',
+    ];
 }
