@@ -16,6 +16,7 @@ class DatabaseSeeder extends Seeder
         $this->call([
             UtilisateurTableSeeder::class,
             DisponibiliteTableSeeder::class,
+            PropositionTableSeeder::class,
             TypeNotificationTableSeeder::class,
             NotificationTableSeeder::class,
         ]);

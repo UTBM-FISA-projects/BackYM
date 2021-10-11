@@ -23,6 +23,7 @@ class CreatePropositionTable extends Migration
                 ->foreignId('id_destinataire')
                 ->constrained('utilisateur', 'id_utilisateur')
                 ->onDelete('cascade');
+            $table->boolean('accepter')->nullable();
         });
     }
 
