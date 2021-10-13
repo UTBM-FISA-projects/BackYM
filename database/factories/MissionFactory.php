@@ -20,11 +20,11 @@ class MissionFactory extends Factory
             'titre' => $this->faker->name,
             'description' => $this->faker->optional->text(),
             'etat' => $this->faker->randomElement(['todo', 'doing', 'done']),
-            'temps_estime' => $this->faker->time,
-            'temps_passe' => $this->faker->time,
+            'temps_estime' => $this->faker->time('H:i'),
+            'temps_passe' => $this->faker->time('H:i'),
             'debut_date_prevu' => $this->faker->dateTime,
             'fin_date_prevu' => $this->faker->dateTime,
-            'valider_cdt' => $this->faker->boolean(50),
+            'valider_cdt' => $this->faker->boolean,
             'valider_executant' => $this->faker->boolean(80),
             'id_chantier' => Chantier::all()
                 ->random()

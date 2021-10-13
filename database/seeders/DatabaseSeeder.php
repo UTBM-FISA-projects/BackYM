@@ -2,7 +2,6 @@
 
 namespace Database\Seeders;
 
-use Database\Factories\MissionFactory;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -18,7 +17,7 @@ class DatabaseSeeder extends Seeder
             UtilisateurTableSeeder::class,
             DisponibiliteTableSeeder::class,
             ChantierTableSeeder::class,
-            MissionFactory::class,
+            MissionTableSeeder::class,
             PropositionTableSeeder::class,
             TypeNotificationTableSeeder::class,
             NotificationTableSeeder::class,

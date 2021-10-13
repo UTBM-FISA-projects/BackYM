@@ -18,7 +18,7 @@ class ChantierFactory extends Factory
             'deadline' => $this->faker->dateTime,
             'archiver' => $this->faker->boolean(90),
             'id_moa' => Utilisateur::query()
-                ->where('type', 'cli')
+                ->where('type', 'moa')
                 ->get()
                 ->random()
                 ->id_utilisateur,

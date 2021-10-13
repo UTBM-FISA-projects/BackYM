@@ -2,7 +2,6 @@
 
 namespace Database\Seeders;
 
-
 use Database\Factories\MissionFactory;
 use Illuminate\Database\Seeder;
 
