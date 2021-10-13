@@ -16,7 +16,7 @@ class ChantierFactory extends Factory
             'nom' => $this->faker->name,
             'description' => $this->faker->optional->text(),
             'deadline' => $this->faker->dateTime,
-            'archiver' => $this->faker->boolean(90),
+            'archiver' => $this->faker->boolean(20),
             'id_moa' => Utilisateur::query()
                 ->where('type', 'moa')
                 ->get()
