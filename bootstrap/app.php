@@ -1,6 +1,8 @@
 <?php
 
-require_once __DIR__.'/../vendor/autoload.php';
+use App\Providers\CollectionServiceProvider;
+
+require_once __DIR__ . '/../vendor/autoload.php';
 
 (new Laravel\Lumen\Bootstrap\LoadEnvironmentVariables(
     dirname(__DIR__)
@@ -89,6 +91,7 @@ $app->configure('app');
 */
 
 // $app->register(App\Providers\AuthServiceProvider::class);
+$app->register(CollectionServiceProvider::class);
 
 /*
 |--------------------------------------------------------------------------

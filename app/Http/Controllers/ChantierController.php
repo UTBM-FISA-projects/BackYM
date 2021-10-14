@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Chantier;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Laravel\Lumen\Routing\Controller;
 
 class ChantierController extends Controller
@@ -14,9 +15,9 @@ class ChantierController extends Controller
      *
      * @param int $id ID du chantier
      */
-    public function getMissions(int $id)
+    public function getMissions(int $id): LengthAwarePaginator
     {
-        return Chantier::query()->findOrFail($id)->missions;
+        return Chantier::query()->findOrFail($id)->missions->paginate();
     }
 
     /**
