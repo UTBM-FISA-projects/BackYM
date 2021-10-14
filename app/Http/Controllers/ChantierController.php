@@ -3,21 +3,21 @@
 namespace App\Http\Controllers;
 
 use App\Models\Chantier;
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Pagination\LengthAwarePaginator;
-use Laravel\Lumen\Routing\Controller;
 
-class ChantierController extends Controller
+class ChantierController extends BaseController
 {
     /**
      * Récupère les missions d'un chantier depuis son ID.
      *
      * @param int $id ID du chantier
      */
-    public function getMissions(int $id): LengthAwarePaginator
+    public function getMissions(int $id): JsonResponse
     {
-        return Chantier::query()->findOrFail($id)->missions->paginate();
+        return self::ok(
+            Chantier::query()->findOrFail($id)->missions->paginate()
+        );
     }
 
     /**
@@ -25,10 +25,10 @@ class ChantierController extends Controller
      *
      * @param \Illuminate\Http\Request $request
      * @param int                      $id
-     * @return \Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection|\Illuminate\Database\Eloquent\Model
+     * @return \Illuminate\Http\JsonResponse
      * @throws \Illuminate\Validation\ValidationException
      */
-    public function put(Request $request, int $id)
+    public function put(Request $request, int $id): JsonResponse
     {
         $attributes = $this->validate($request, [
             'nom' => 'string|max:255',
@@ -36,48 +36,49 @@ class ChantierController extends Controller
             'deadline' => 'nullable|datetime|after:now',
             'archiver' => 'nullable|boolean',
             'id_moa' => 'prohibited',
-            'id_cdt' => 'nullable|integer|exists:utilisateur,id_utilisateur'
+            'id_cdt' => 'nullable|integer|exists:utilisateur,id_utilisateur',
         ]);
 
         $chantier = Chantier::query()->findOrFail($id);
         $chantier->update($attributes);
 
-        return $chantier;
+        return self::updated($chantier);
     }
 
     /**
      * Créer un chantier
      *
      * @param \Illuminate\Http\Request $request
-     * @return \Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Eloquent\Model
+     * @return \Illuminate\Http\JsonResponse
      * @throws \Illuminate\Validation\ValidationException
      */
-    public function post(Request $request)
+    public function post(Request $request): JsonResponse
     {
         $attributes = $this->validate($request, [
             'nom' => 'required|string|max:255',
             'description' => 'nullable|string|max:255',
-            'deadline' => 'nullable|datetime|after:now',
+            'deadline' => 'nullable|date|after:now',
             'archiver' => 'prohibited',
             'id_moa' => 'prohibited',
-            'id_cdt' => 'nullable|integer|exists:utilisateur,id_utilisateur'
+            'id_cdt' => 'nullable|integer|exists:utilisateur,id_utilisateur',
         ]);
 
         $attributes['id_moa'] = 1; // TODO: Récupérer l'id utilisateur depuis Auth
 
-        return Chantier::query()->create($attributes)->refresh();
+        return self::created(
+            Chantier::query()->create($attributes)->refresh()
+        );
     }
 
     /**
      * Supprime un chantier depuis son ID.
      *
      * @param int $id
-     * @return \Illuminate\Database\Eloquent\Model
+     * @return \Illuminate\Http\JsonResponse
      */
-    public function delete(int $id): Model
+    public function delete(int $id): JsonResponse
     {
-        $chantier = Chantier::query()->findOrFail($id);
-        $chantier->delete();
-        return $chantier;
+        Chantier::query()->findOrFail($id)->delete();
+        return self::deleted();
     }
 }

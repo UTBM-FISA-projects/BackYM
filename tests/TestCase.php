@@ -1,5 +1,7 @@
 <?php
 
+use Illuminate\Support\Facades\Artisan;
+use Laravel\Lumen\Application;
 use Laravel\Lumen\Testing\TestCase as BaseTestCase;
 
 abstract class TestCase extends BaseTestCase
@@ -9,8 +11,14 @@ abstract class TestCase extends BaseTestCase
      *
      * @return \Laravel\Lumen\Application
      */
-    public function createApplication()
+    public function createApplication(): Application
     {
-        return require __DIR__.'/../bootstrap/app.php';
+        return require __DIR__ . '/../bootstrap/app.php';
+    }
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+        Artisan::call('migrate:fresh --seed');
     }
 }
