@@ -3,7 +3,8 @@
 namespace Database\Factories;
 
 use App\Models\Notification;
-use App\Models\Utilisateur;
+use App\Models\NotificationType;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class NotificationFactory extends Factory
@@ -18,8 +19,9 @@ class NotificationFactory extends Factory
         return [
             'creation' => $this->faker->dateTime,
             'is_read' => $this->faker->boolean,
-            'id_destinataire' => Utilisateur::all()->random()->id_utilisateur,
-            'id_type_notification' => $this->faker->randomElement([1, 2, 3]),
+            'parameters' => json_encode(['toto' => 'tata', 'foo' => ['bar', 'egg']]),
+            'id_recipient' => User::all()->random()->id_user,
+            'id_notification_type' => NotificationType::all()->random()->id_notification_type,
         ];
     }
 }

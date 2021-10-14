@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateChantierTable extends Migration
+class CreateYardTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,20 +13,20 @@ class CreateChantierTable extends Migration
      */
     public function up()
     {
-        Schema::create('chantier', function (Blueprint $table) {
-            $table->id('id_chantier');
-            $table->string('nom');
+        Schema::create('yard', function (Blueprint $table) {
+            $table->id('id_yard');
+            $table->string('name');
             $table->string('description')->nullable();
             $table->dateTime('deadline')->nullable();
-            $table->boolean('archiver')->nullable();
+            $table->boolean('archived')->nullable();
             $table
-                ->foreignId('id_moa')
-                ->constrained('utilisateur', 'id_utilisateur')
+                ->foreignId('id_project_owner')
+                ->constrained('user', 'id_user')
                 ->onDelete('cascade');
             $table
-                ->foreignId('id_cdt')
+                ->foreignId('id_supervisor')
                 ->nullable()
-                ->constrained('utilisateur', 'id_utilisateur')
+                ->constrained('user', 'id_user')
                 ->onDelete('set null');
         });
     }
@@ -38,6 +38,6 @@ class CreateChantierTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('chantier');
+        Schema::dropIfExists('yard');
     }
 }

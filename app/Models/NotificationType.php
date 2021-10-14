@@ -2,19 +2,19 @@
 
 namespace App\Models;
 
-class TypeNotification extends BaseModel
+class NotificationType extends BaseModel
 {
     protected $fillable = [];
 
     protected $visible = [
         'id_type_notification',
-        'titre',
+        'title',
         'template',
     ];
 
     protected $casts = [
         'id_type_notification' => 'integer',
-        'titre' => 'string',
+        'title' => 'string',
         'template' => 'string',
     ];
 }

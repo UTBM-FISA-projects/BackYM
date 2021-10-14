@@ -2,13 +2,13 @@
 
 namespace Database\Factories;
 
-use App\Models\Disponibilite;
-use App\Models\Utilisateur;
+use App\Models\Availability;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
-class DisponibiliteFactory extends Factory
+class AvailabilityFactory extends Factory
 {
-    protected $model = Disponibilite::class;
+    protected $model = Availability::class;
 
     /**
      * @inheritDoc
@@ -18,11 +18,11 @@ class DisponibiliteFactory extends Factory
         return [
             'start' => $this->faker->dateTime,
             'end' => $this->faker->dateTime,
-            'id_utilisateur' => Utilisateur::query()
-                ->where('type', 'ets')
+            'id_user' => User::query()
+                ->where('type', 'enterprise')
                 ->get()
                 ->random()
-                ->id_utilisateur
+                ->id_user,
         ];
     }
 }

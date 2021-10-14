@@ -18,13 +18,14 @@ class CreateNotificationTable extends Migration
             $table->id('id_notification');
             $table->dateTime('creation')->default(DB::raw('CURRENT_TIMESTAMP'));
             $table->boolean('is_read')->nullable();
+            $table->json('parameters');
             $table
-                ->foreignId('id_destinataire')
-                ->constrained('utilisateur', 'id_utilisateur')
+                ->foreignId('id_recipient')
+                ->constrained('user', 'id_user')
                 ->onDelete('cascade');
             $table
-                ->foreignId('id_type_notification')
-                ->constrained('type_notification', 'id_type_notification')
+                ->foreignId('id_notification_type')
+                ->constrained('notification_type', 'id_notification_type')
                 ->onDelete('cascade');
         });
     }

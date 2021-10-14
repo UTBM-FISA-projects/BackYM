@@ -2,10 +2,10 @@
 
 namespace Database\Seeders;
 
-use App\Models\Utilisateur;
+use Database\Factories\ProposalFactory;
 use Illuminate\Database\Seeder;
 
-class UtilisateurTableSeeder extends Seeder
+class ProposalTableSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -14,8 +14,6 @@ class UtilisateurTableSeeder extends Seeder
      */
     public function run()
     {
-        Utilisateur::factory()
-            ->times(20)
-            ->create();
+        ProposalFactory::times(20)->create();
     }
 }

@@ -2,25 +2,25 @@
 
 namespace App\Models;
 
-class Disponibilite extends BaseModel
+class Availability extends BaseModel
 {
     protected $fillable = [
         'start',
         'end',
-        'id_utilisateur',
+        'id_user',
     ];
 
     protected $visible = [
-        'id_disponibilite',
+        'id_availability',
         'start',
         'end',
-        'id_utilisateur',
+        'id_user',
     ];
 
     protected $casts = [
-        'id_disponibilite' => 'integer',
+        'id_availability' => 'integer',
         'start' => 'datetime',
         'end' => 'datetime',
-        'id_utilisateur' => 'integer',
+        'id_user' => 'integer',
     ];
 }

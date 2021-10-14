@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateUtilisateurTable extends Migration
+class CreateUserTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,20 +13,20 @@ class CreateUtilisateurTable extends Migration
      */
     public function up()
     {
-        Schema::create('utilisateur', function (Blueprint $table) {
-            $table->id('id_utilisateur');
-            $table->string('nom');
+        Schema::create('user', function (Blueprint $table) {
+            $table->id('id_user');
+            $table->string('name');
             $table->string('description')->nullable();
-            $table->enum('type', ['moa', 'ets', 'cdt']);
-            $table->string('mail')->unique();
-            $table->string('telephone')->nullable();
+            $table->enum('type', ['project_owner', 'enterprise', 'supervisor']);
+            $table->string('email')->unique();
+            $table->string('phone')->nullable();
             $table->string('password');
-            $table->string('token')->unique()->nullable();
+            $table->string('token')->nullable()->unique();
             $table->dateTime('token_gentime')->nullable();
             $table
-                ->foreignId('id_entreprise')
+                ->foreignId('id_enterprise')
                 ->nullable()
-                ->constrained('utilisateur', 'id_utilisateur')
+                ->constrained('user', 'id_user')
                 ->onDelete('cascade');
         });
     }
@@ -38,6 +38,6 @@ class CreateUtilisateurTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('utilisateur');
+        Schema::dropIfExists('user');
     }
 }

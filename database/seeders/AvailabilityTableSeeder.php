@@ -2,10 +2,10 @@
 
 namespace Database\Seeders;
 
-use Database\Factories\DisponibiliteFactory;
+use Database\Factories\AvailabilityFactory;
 use Illuminate\Database\Seeder;
 
-class DisponibiliteTableSeeder extends Seeder
+class AvailabilityTableSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -14,6 +14,6 @@ class DisponibiliteTableSeeder extends Seeder
      */
     public function run()
     {
-        DisponibiliteFactory::times(20)->create();
+        AvailabilityFactory::times(20)->create();
     }
 }

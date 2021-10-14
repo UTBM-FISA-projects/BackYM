@@ -2,35 +2,35 @@
 
 namespace App\Models;
 
-class Utilisateur extends BaseModel
+class User extends BaseModel
 {
     protected $fillable = [
-        'nom',
+        'name',
         'description',
-        'mail',
-        'telephone',
+        'email',
+        'phone',
     ];
 
     protected $visible = [
-        'id_utilisateur',
-        'nom',
+        'id_user',
+        'name',
         'description',
         'type',
-        'mail',
-        'telephone',
-        'id_entreprise',
+        'email',
+        'phone',
+        'id_enterprise',
     ];
 
     protected $casts = [
-        'id_utilisateur' => 'integer',
-        'nom' => 'string',
+        'id_user' => 'integer',
+        'name' => 'string',
         'description' => 'string',
         'type' => 'string',
-        'mail' => 'string',
-        'telephone' => 'string',
+        'email' => 'string',
+        'phone' => 'string',
         'password' => 'string',
         'token' => 'string',
         'token_gentime' => 'datetime',
-        'id_entreprise' => 'integer',
+        'id_enterprise' => 'integer',
     ];
 }

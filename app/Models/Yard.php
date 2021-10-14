@@ -5,52 +5,52 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
-class Chantier extends BaseModel
+class Yard extends BaseModel
 {
     protected $fillable = [
-        'nom',
+        'name',
         'description',
         'deadline',
-        'archiver',
-        'id_moa',
-        'id_cdt',
+        'archived',
+        'id_project_owner',
+        'id_supervisor',
     ];
 
     protected $visible = [
-        'id_chantier',
-        'nom',
+        'id_yard',
+        'name',
         'description',
         'deadline',
-        'archiver',
-        'cdt',
-        'moa',
+        'archived',
+        'supervisor',
+        'project_owner',
     ];
 
     protected $casts = [
-        'id_chantier' => 'integer',
-        'nom' => 'string',
+        'id_yard' => 'integer',
+        'name' => 'string',
         'description' => 'string',
         'deadline' => 'datetime',
-        'archiver' => 'boolean',
-        'id_moa' => 'integer',
-        'id_cdt' => 'integer',
+        'archived' => 'boolean',
+        'id_project_owner' => 'integer',
+        'id_supervisor' => 'integer',
     ];
 
     protected $with = [
-        'cdt',
-        'moa',
+        'supervisor',
+        'project_owner',
     ];
 
     /**
      * Un chantier possède des missions
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-    public function missions(): HasMany
+    public function tasks(): HasMany
     {
         return $this->hasMany(
-            Mission::class,
-            'id_chantier',
-            'id_chantier'
+            Task::class,
+            'id_yard',
+            'id_yard'
         );
     }
 
@@ -58,12 +58,12 @@ class Chantier extends BaseModel
      * Un chantier possède un maitre d'oeuvre (demandeur)
      * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
-    public function moa(): HasOne
+    public function project_owner(): HasOne
     {
         return $this->hasOne(
-            Utilisateur::class,
-            'id_utilisateur',
-            'id_moa'
+            User::class,
+            'id_user',
+            'id_project_owner'
         );
     }
 
@@ -71,12 +71,12 @@ class Chantier extends BaseModel
      * Un chantier possède un conducteur de travaux
      * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
-    public function cdt(): HasOne
+    public function supervisor(): HasOne
     {
         return $this->hasOne(
-            Utilisateur::class,
-            'id_utilisateur',
-            'id_cdt'
+            User::class,
+            'id_user',
+            'id_supervisor'
         );
     }
 }

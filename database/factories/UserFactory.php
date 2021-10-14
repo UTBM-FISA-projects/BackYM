@@ -2,12 +2,12 @@
 
 namespace Database\Factories;
 
-use \App\Models\Utilisateur;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
-class UtilisateurFactory extends Factory
+class UserFactory extends Factory
 {
-    protected $model = Utilisateur::class;
+    protected $model = User::class;
 
     /**
      * @inheritDoc
@@ -15,15 +15,15 @@ class UtilisateurFactory extends Factory
     public function definition(): array
     {
         return [
-            'nom' => $this->faker->name,
+            'name' => $this->faker->name,
             'description' => $this->faker->optional->text(),
-            'type' => $this->faker->randomElement(['moa', 'ets', 'cdt']),
-            'mail' => $this->faker->email,
-            'telephone' => $this->faker->optional->phoneNumber(),
+            'type' => $this->faker->randomElement(['project_owner', 'enterprise', 'supervisor']),
+            'email' => $this->faker->email,
+            'phone' => $this->faker->optional->phoneNumber(),
             'password' => $this->faker->sha256,
             'token' => null,
             'token_gentime' => null,
-            'id_entreprise' => null,
+            'id_enterprise' => null,
         ];
     }
 }

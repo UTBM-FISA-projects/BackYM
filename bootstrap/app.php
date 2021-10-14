@@ -107,7 +107,7 @@ $app->register(CollectionServiceProvider::class);
 $app->router->group([
     'namespace' => 'App\Http\Controllers',
 ], function ($router) {
-    require __DIR__ . '/../routes/chantiers.php';
+    require __DIR__ . '/../routes/yard.php';
 });
 
 return $app;

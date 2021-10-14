@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Chantier;
+use App\Models\Yard;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
-class ChantierController extends BaseController
+class YardController extends BaseController
 {
     /**
      * Récupère les missions d'un chantier depuis son ID.
@@ -15,13 +15,13 @@ class ChantierController extends BaseController
      * @param int $id ID du chantier
      * @throws \Illuminate\Auth\Access\AuthorizationException
      */
-    public function getMissions(int $id): JsonResponse
+    public function getTasks(int $id): JsonResponse
     {
-        $chantier = Chantier::query()->findOrFail($id);
+        $yard = Yard::query()->findOrFail($id);
 
-        $this->authorize('getMissions', $chantier);
+        $this->authorize('getTasks', $yard);
 
-        return self::ok($chantier->missions->paginate());
+        return self::ok($yard->tasks->paginate());
     }
 
     /**
@@ -35,22 +35,22 @@ class ChantierController extends BaseController
      */
     public function put(Request $request, int $id): JsonResponse
     {
-        $chantier = Chantier::query()->findOrFail($id);
+        $yard = Yard::query()->findOrFail($id);
 
-        $this->authorize('update', $chantier);
+        $this->authorize('update', $yard);
 
         $attributes = $this->validate($request, [
-            'nom' => 'string|max:255',
+            'name' => 'string|max:255',
             'description' => 'nullable|string|max:255',
             'deadline' => 'nullable|datetime|after:now',
-            'archiver' => 'nullable|boolean',
-            'id_moa' => 'prohibited',
-            'id_cdt' => 'nullable|integer|exists:utilisateur,id_utilisateur',
+            'archived' => 'nullable|boolean',
+            'id_project_owner' => 'prohibited',
+            'id_supervisor' => 'nullable|integer|exists:user,id_user',
         ]);
 
-        $chantier->update($attributes);
+        $yard->update($attributes);
 
-        return self::updated($chantier);
+        return self::updated($yard);
     }
 
     /**
@@ -66,18 +66,18 @@ class ChantierController extends BaseController
         $this->authorize('create');
 
         $attributes = $this->validate($request, [
-            'nom' => 'required|string|max:255',
+            'name' => 'required|string|max:255',
             'description' => 'nullable|string|max:255',
             'deadline' => 'nullable|date|after:now',
-            'archiver' => 'prohibited',
-            'id_moa' => 'prohibited',
-            'id_cdt' => 'nullable|integer|exists:utilisateur,id_utilisateur',
+            'archived' => 'prohibited',
+            'id_project_owner' => 'prohibited',
+            'id_supervisor' => 'nullable|integer|exists:user,id_user',
         ]);
 
-        $attributes['id_moa'] = Auth::user()->id_utilisateur;
+        $attributes['id_project_owner'] = Auth::user()->id_user;
 
         return self::created(
-            Chantier::query()->create($attributes)->fresh()
+            Yard::query()->create($attributes)->fresh()
         );
     }
 
@@ -90,11 +90,11 @@ class ChantierController extends BaseController
      */
     public function delete(int $id): JsonResponse
     {
-        $chantier = Chantier::query()->findOrFail($id);
+        $yard = Yard::query()->findOrFail($id);
 
-        $this->authorize('delete', $chantier);
+        $this->authorize('delete', $yard);
 
-        $chantier->delete();
+        $yard->delete();
         return self::deleted();
     }
 }

@@ -2,9 +2,9 @@
 
 namespace App\Providers;
 
-use App\Models\Chantier;
-use App\Models\Utilisateur;
-use App\Policies\ChantierPolicy;
+use App\Models\User;
+use App\Models\Yard;
+use App\Policies\YardPolicy;
 use Illuminate\Auth\GenericUser;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -28,16 +28,16 @@ class AuthServiceProvider extends ServiceProvider
         $this->app['auth']->viaRequest('api', function (Request $request) {
             if (env('APP_DEBUG')) {
                 return new GenericUser([
-                    'id_utilisateur' => 1,
-                    'nom' => 'toto',
-                    'id_entreprise' => 2,
+                    'id_user' => 1,
+                    'name' => 'toto',
+                    'id_enterprise' => 2,
                 ]);
             }
 
             $token = $request->cookie('token');
 
             if ($token != null && $token != '') {
-                return Utilisateur::query()
+                return User::query()
                     ->where('token', $token)
                     ->where('token_gentime', '>', DB::raw('NOW() - INTERVAL 24 HOUR'))
                     ->first();
@@ -55,6 +55,6 @@ class AuthServiceProvider extends ServiceProvider
             return env('APP_DEBUG');
         });
 
-        Gate::policy(Chantier::class, ChantierPolicy::class);
+        Gate::policy(Yard::class, YardPolicy::class);
     }
 }

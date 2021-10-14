@@ -12,27 +12,29 @@ class Notification extends BaseModel
         'id_notification',
         'creation',
         'is_read',
-        'id_destinataire',
-        'typeNotification',
+        'parameters',
+        'id_recipient',
+        'id_notification_type',
     ];
 
     protected $casts = [
         'id_notification' => 'integer',
         'creation' => 'datetime',
         'is_read' => 'boolean',
-        'id_destinataire' => 'integer',
-        'id_type_notification' => 'integer',
+        'parameters' => 'json',
+        'id_recipient' => 'integer',
+        'id_notification_type' => 'integer',
     ];
 
     /**
      * Récupère le type d'une notification.
      */
-    public function typeNotification(): BelongsTo
+    public function notificationType(): BelongsTo
     {
         return $this->belongsTo(
-            TypeNotification::class,
-            'id_type_notification',
-            'id_type_notification'
+            NotificationType::class,
+            'id_notification_type',
+            'id_notification_type'
         );
     }
 }

@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateTypeNotificationTable extends Migration
+class CreateNotificationTypeTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,9 +13,9 @@ class CreateTypeNotificationTable extends Migration
      */
     public function up()
     {
-        Schema::create('type_notification', function (Blueprint $table) {
-            $table->id('id_type_notification');
-            $table->string('titre');
+        Schema::create('notification_type', function (Blueprint $table) {
+            $table->id('id_notification_type');
+            $table->string('title');
             $table->string('template');
         });
     }
@@ -27,6 +27,6 @@ class CreateTypeNotificationTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('type_notification');
+        Schema::dropIfExists('notification_type');
     }
 }

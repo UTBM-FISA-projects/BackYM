@@ -2,10 +2,10 @@
 
 namespace Database\Seeders;
 
-use Database\Factories\PropositionFactory;
+use App\Models\User;
 use Illuminate\Database\Seeder;
 
-class PropositionTableSeeder extends Seeder
+class UserTableSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -14,6 +14,8 @@ class PropositionTableSeeder extends Seeder
      */
     public function run()
     {
-        PropositionFactory::times(20)->create();
+        User::factory()
+            ->times(20)
+            ->create();
     }
 }

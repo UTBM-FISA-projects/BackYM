@@ -1,101 +1,101 @@
 drop table if exists notification;
-drop table if exists type_notification;
-drop table if exists proposition;
-drop table if exists mission;
-drop table if exists chantier;
-drop table if exists disponibilite;
-drop table if exists utilisateur;
+drop table if exists notification_type;
+drop table if exists proposal;
+drop table if exists task;
+drop table if exists yard;
+drop table if exists availability;
+drop table if exists user;
 
 
--- UTILISATEUR
+-- USER
 -- Décrit un utilisateur, client ou entreprise
-create table utilisateur
+create table user
 (
-    id_utilisateur bigint unsigned primary key auto_increment,
-    nom            varchar(255)               not null,
-    description    varchar(255),
-    type           enum ('moa', 'ets', 'cdt') not null,
-    mail           varchar(255) unique        not null,
-    telephone      varchar(255),
-    password       varchar(255)               not null,
-    token          varchar(255) unique,
-    token_gentime  datetime,
-    id_entreprise  bigint unsigned,
-    constraint utilisateur_entreprise foreign key (id_entreprise) references utilisateur (id_utilisateur) on delete cascade
+    id_user       bigint unsigned primary key auto_increment,
+    name          varchar(255)                                       not null,
+    description   varchar(255),
+    type          enum ('project_owner', 'enterprise', 'supervisor') not null,
+    email         varchar(255) unique                                not null,
+    phone         varchar(255),
+    password      varchar(255)                                       not null,
+    token         varchar(255) unique,
+    token_gentime datetime,
+    id_enterprise bigint unsigned,
+    constraint user_enterprise foreign key (id_enterprise) references user (id_user) on delete cascade
 );
 
 
--- DISPONIBILITE
+-- AVAILABILITY
 -- Disponibilités d'une entreprise
-create table disponibilite
+create table availability
 (
-    id_disponibilite bigint unsigned primary key auto_increment,
-    start            datetime        not null,
-    end              datetime        not null,
-    id_utilisateur   bigint unsigned not null,
-    constraint disponibilite_utilisateur foreign key (id_utilisateur) references utilisateur (id_utilisateur) on delete cascade
+    id_availability bigint unsigned primary key auto_increment,
+    start           datetime        not null,
+    end             datetime        not null,
+    id_user         bigint unsigned not null,
+    constraint availability_user foreign key (id_user) references user (id_user) on delete cascade
 );
 
 
--- CHANTIER
+-- YARD
 -- Défini un chantier
-create table chantier
+create table yard
 (
-    id_chantier bigint unsigned primary key auto_increment,
-    nom         varchar(255)    not null,
-    description varchar(255),
-    deadline    datetime,
-    archiver    bool,
-    id_moa      bigint unsigned not null,
-    id_cdt      bigint unsigned,
-    constraint chantier_moa foreign key (id_moa) references utilisateur (id_utilisateur) on delete cascade,
-    constraint chantier_cdt foreign key (id_cdt) references utilisateur (id_utilisateur) on delete set null
+    id_yard          bigint unsigned primary key auto_increment,
+    name             varchar(255)    not null,
+    description      varchar(255),
+    deadline         date,
+    archived         bool,
+    id_project_owner bigint unsigned not null,
+    id_supervisor    bigint unsigned,
+    constraint yard_project_owner foreign key (id_project_owner) references user (id_user) on delete cascade,
+    constraint yard_supervisor foreign key (id_supervisor) references user (id_user) on delete set null
 );
 
 
--- MISSION
+-- TASK
 -- Décrit une mission / tache d'un chantier
-create table mission
+create table task
 (
-    id_mission        bigint unsigned primary key auto_increment,
-    titre             varchar(255)                   not null,
-    description       varchar(255),
-    etat              enum ('todo', 'doing', 'done') not null default 'todo',
-    temps_estime      time,
-    temps_passe       time,
-    debut_date_prevu  date,
-    fin_date_prevu    date,
-    valider_cdt       bool,
-    valider_executant bool,
-    id_executant      bigint unsigned,
-    id_chantier       bigint unsigned                not null,
-    constraint mission_executant foreign key (id_executant) references utilisateur (id_utilisateur) on delete set null,
-    constraint mission_chantier foreign key (id_chantier) references chantier (id_chantier) on delete cascade
+    id_task              bigint unsigned primary key auto_increment,
+    title                varchar(255)                   not null,
+    description          varchar(255),
+    state                enum ('todo', 'doing', 'done') not null default 'todo',
+    estimated_time       time,
+    time_spent           time,
+    start_planned_date   date,
+    end_planned_date     date,
+    supervisor_validated bool,
+    executor_validated   bool,
+    id_executor          bigint unsigned,
+    id_yard              bigint unsigned                not null,
+    constraint task_executor foreign key (id_executor) references user (id_user) on delete set null,
+    constraint task_yard foreign key (id_yard) references yard (id_yard) on delete cascade
 );
 
 
--- PROPOSITION
+-- PROPOSAL
 -- Proposition de chantier pour une entreprise
-create table proposition
+create table proposal
 (
-    id_proposition  bigint unsigned primary key auto_increment,
-    id_chantier     bigint unsigned not null,
-    id_destinataire bigint unsigned not null,
-    accepter        bool,
-    constraint proposition_chantier foreign key (id_chantier) references chantier (id_chantier) on delete cascade,
-    constraint proposition_destinataire foreign key (id_destinataire) references utilisateur (id_utilisateur) on delete cascade
+    id_proposal  bigint unsigned primary key auto_increment,
+    id_yard      bigint unsigned not null,
+    id_recipient bigint unsigned not null,
+    accepted     bool,
+    constraint proposal_yard foreign key (id_yard) references yard (id_yard) on delete cascade,
+    constraint proposal_recipient foreign key (id_recipient) references user (id_user) on delete cascade
 );
 
 
--- TYPE_NOTIFICATION
-create table type_notification
+-- NOTIFICATION_TYPE
+create table notification_type
 (
-    id_type_notification bigint unsigned primary key auto_increment,
-    titre                varchar(255) not null,
+    id_notification_type bigint unsigned primary key auto_increment,
+    title                varchar(255) not null,
     template             varchar(255) not null
 );
 
-insert into type_notification(id_type_notification, titre, template)
+insert into notification_type(id_notification_type, title, template)
 VALUES (1, 'proposition', 'L\'entreprise ${entreprise} vous propose le chantier ${chantier}.'),
        (2, 'proposition_mission',
         'L\'entreprise ${entreprise} vous propose la mission ${mission} sur le chantier ${chantier}.'),
@@ -108,8 +108,9 @@ create table notification
     id_notification      bigint unsigned primary key auto_increment,
     creation             datetime        not null default CURRENT_TIMESTAMP,
     is_read              bool,
-    id_destinataire      bigint unsigned not null,
-    id_type_notification bigint unsigned not null,
-    constraint notification_destinataire foreign key (id_destinataire) references utilisateur (id_utilisateur) on delete cascade,
-    constraint type_notification foreign key (id_type_notification) references type_notification (id_type_notification) on delete cascade
+    parameters           json            not null,
+    id_recipient         bigint unsigned not null,
+    id_notification_type bigint unsigned not null,
+    constraint notification_recipient foreign key (id_recipient) references user (id_user) on delete cascade,
+    constraint notification_type foreign key (id_notification_type) references notification_type (id_notification_type) on delete cascade
 );

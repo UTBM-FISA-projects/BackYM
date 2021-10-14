@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreatePropositionTable extends Migration
+class CreateProposalTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,17 +13,17 @@ class CreatePropositionTable extends Migration
      */
     public function up()
     {
-        Schema::create('proposition', function (Blueprint $table) {
-            $table->id('id_proposition');
+        Schema::create('proposal', function (Blueprint $table) {
+            $table->id('id_proposal');
             $table
-                ->foreignId('id_chantier')
-                ->constrained('chantier', 'id_chantier')
+                ->foreignId('id_yard')
+                ->constrained('yard', 'id_yard')
                 ->onDelete('cascade');
             $table
-                ->foreignId('id_destinataire')
-                ->constrained('utilisateur', 'id_utilisateur')
+                ->foreignId('id_recipient')
+                ->constrained('user', 'id_user')
                 ->onDelete('cascade');
-            $table->boolean('accepter')->nullable();
+            $table->boolean('accepted')->nullable();
         });
     }
 
@@ -34,6 +34,6 @@ class CreatePropositionTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('proposition');
+        Schema::dropIfExists('proposal');
     }
 }
