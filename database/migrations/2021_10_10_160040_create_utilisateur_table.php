@@ -21,7 +21,7 @@ class CreateUtilisateurTable extends Migration
             $table->string('mail')->unique();
             $table->string('telephone')->nullable();
             $table->string('password');
-            $table->string('token')->nullable();
+            $table->string('token')->unique()->nullable();
             $table->dateTime('token_gentime')->nullable();
             $table
                 ->foreignId('id_entreprise')

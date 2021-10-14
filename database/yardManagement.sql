@@ -18,7 +18,7 @@ create table utilisateur
     mail           varchar(255) unique        not null,
     telephone      varchar(255),
     password       varchar(255)               not null,
-    token          varchar(255),
+    token          varchar(255) unique,
     token_gentime  datetime,
     id_entreprise  bigint unsigned,
     constraint utilisateur_entreprise foreign key (id_entreprise) references utilisateur (id_utilisateur) on delete cascade

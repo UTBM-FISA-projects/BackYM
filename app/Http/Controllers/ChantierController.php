@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Chantier;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class ChantierController extends BaseController
 {
@@ -12,12 +13,15 @@ class ChantierController extends BaseController
      * Récupère les missions d'un chantier depuis son ID.
      *
      * @param int $id ID du chantier
+     * @throws \Illuminate\Auth\Access\AuthorizationException
      */
     public function getMissions(int $id): JsonResponse
     {
-        return self::ok(
-            Chantier::query()->findOrFail($id)->missions->paginate()
-        );
+        $chantier = Chantier::query()->findOrFail($id);
+
+        $this->authorize('getMissions', $chantier);
+
+        return self::ok($chantier->missions->paginate());
     }
 
     /**
@@ -27,9 +31,14 @@ class ChantierController extends BaseController
      * @param int                      $id
      * @return \Illuminate\Http\JsonResponse
      * @throws \Illuminate\Validation\ValidationException
+     * @throws \Illuminate\Auth\Access\AuthorizationException
      */
     public function put(Request $request, int $id): JsonResponse
     {
+        $chantier = Chantier::query()->findOrFail($id);
+
+        $this->authorize('update', $chantier);
+
         $attributes = $this->validate($request, [
             'nom' => 'string|max:255',
             'description' => 'nullable|string|max:255',
@@ -39,7 +48,6 @@ class ChantierController extends BaseController
             'id_cdt' => 'nullable|integer|exists:utilisateur,id_utilisateur',
         ]);
 
-        $chantier = Chantier::query()->findOrFail($id);
         $chantier->update($attributes);
 
         return self::updated($chantier);
@@ -51,9 +59,12 @@ class ChantierController extends BaseController
      * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\JsonResponse
      * @throws \Illuminate\Validation\ValidationException
+     * @throws \Illuminate\Auth\Access\AuthorizationException
      */
     public function post(Request $request): JsonResponse
     {
+        $this->authorize('create');
+
         $attributes = $this->validate($request, [
             'nom' => 'required|string|max:255',
             'description' => 'nullable|string|max:255',
@@ -63,10 +74,10 @@ class ChantierController extends BaseController
             'id_cdt' => 'nullable|integer|exists:utilisateur,id_utilisateur',
         ]);
 
-        $attributes['id_moa'] = 1; // TODO: Récupérer l'id utilisateur depuis Auth
+        $attributes['id_moa'] = Auth::user()->id_utilisateur;
 
         return self::created(
-            Chantier::query()->create($attributes)->refresh()
+            Chantier::query()->create($attributes)->fresh()
         );
     }
 
@@ -75,10 +86,15 @@ class ChantierController extends BaseController
      *
      * @param int $id
      * @return \Illuminate\Http\JsonResponse
+     * @throws \Illuminate\Auth\Access\AuthorizationException
      */
     public function delete(int $id): JsonResponse
     {
-        Chantier::query()->findOrFail($id)->delete();
+        $chantier = Chantier::query()->findOrFail($id);
+
+        $this->authorize('delete', $chantier);
+
+        $chantier->delete();
         return self::deleted();
     }
 }
