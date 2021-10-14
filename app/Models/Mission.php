@@ -37,8 +37,8 @@ class Mission extends BaseModel
         'temps_passe' => 'datetime:H:i',
         'debut_date_prevu' => 'date',
         'fin_date_prevu' => 'date',
-        'valider_cdt' => 'integer',
-        'valider_executant' => 'integer',
+        'valider_cdt' => 'boolean',
+        'valider_executant' => 'boolean',
         'id_executant' => 'integer',
         'id_chantier' => 'integer',
     ];
