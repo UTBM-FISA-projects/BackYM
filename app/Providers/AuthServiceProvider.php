@@ -4,8 +4,8 @@ namespace App\Providers;
 
 use App\Models\User;
 use App\Models\Yard;
+use App\Policies\UserPolicy;
 use App\Policies\YardPolicy;
-use Illuminate\Auth\GenericUser;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
@@ -27,11 +27,7 @@ class AuthServiceProvider extends ServiceProvider
 
         $this->app['auth']->viaRequest('api', function (Request $request) {
             if (env('APP_DEBUG')) {
-                return new GenericUser([
-                    'id_user' => 1,
-                    'name' => 'toto',
-                    'id_enterprise' => 2,
-                ]);
+                return User::query()->find(1);
             }
 
             $token = $request->cookie('token');
@@ -52,9 +48,13 @@ class AuthServiceProvider extends ServiceProvider
     public function registerPolicies()
     {
         Gate::before(function () {
-            return env('APP_DEBUG');
+            if (env('APP_DEBUG')) {
+                return true;
+            }
+            return null;
         });
 
         Gate::policy(Yard::class, YardPolicy::class);
+        Gate::policy(User::class, UserPolicy::class);
     }
 }
