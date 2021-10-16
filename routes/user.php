@@ -13,3 +13,5 @@ $router->group(['middleware' => 'auth'], function () use ($router) {
 
     $router->put('/users', ['uses' => 'UserController@update']);
 });
+
+$router->post('/users', ['uses' => 'UserController@create']);

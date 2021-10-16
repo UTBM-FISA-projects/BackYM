@@ -58,7 +58,7 @@ class UserController extends BaseController
     }
 
     /**
-     * Récupère les notifications d'un utilisateur à partir de son ID.
+     * Récupère les notifications de l'utilisateur authentifié.
      *
      * @return \Illuminate\Http\JsonResponse
      */
@@ -70,7 +70,7 @@ class UserController extends BaseController
     }
 
     /**
-     * Met à jour un utilisateur.
+     * Met à jour l'utilisateur authentifié.
      *
      * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\JsonResponse
@@ -80,6 +80,9 @@ class UserController extends BaseController
     {
         $attributes = $this->validate($request, [
             'name' => 'string|max:255',
+            'description' => 'string|max:255',
+            'email' => 'email|max:255|unique:user,email',
+            'phone' => 'string|max:255',
         ]);
 
         $user = User::query()->findOrFail(Auth::user()->id_user);
@@ -88,5 +91,30 @@ class UserController extends BaseController
         return self::updated($user);
     }
 
-    // create
+    /**
+     * Créer un nouvel utilisateur.
+     *
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\JsonResponse
+     * @throws \Illuminate\Validation\ValidationException
+     */
+    public function create(Request $request): JsonResponse
+    {
+        $attributes = $this->validate($request, [
+            'name' => 'required|string|max:255',
+            'description' => 'string|max:255',
+            'type' => 'required|string|in:project_owner,enterprise,supervisor',
+            'email' => 'required|email|max:255|unique:user,email',
+            'phone' => 'string|max:255',
+            'password' => 'required|string|confirmed|max:255',
+            'password_confirmation' => 'required|string|max:255',
+            'id_enterprise' => 'integer|required_if:type,supervisor|prohibited_if:type,project_owner,enterprise|exists:user,id_user',
+        ]);
+
+        $user = new User($attributes);
+        $user->password = $attributes['password'];
+
+        $user->save();
+        return self::created($user->fresh());
+    }
 }
