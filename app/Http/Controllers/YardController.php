@@ -44,7 +44,6 @@ class YardController extends BaseController
             'description' => 'nullable|string|max:255',
             'deadline' => 'nullable|datetime|after:now',
             'archived' => 'nullable|boolean',
-            'id_project_owner' => 'prohibited',
             'id_supervisor' => 'nullable|integer|exists:user,id_user',
         ]);
 
@@ -70,15 +69,14 @@ class YardController extends BaseController
             'description' => 'nullable|string|max:255',
             'deadline' => 'nullable|date|after:now',
             'archived' => 'prohibited',
-            'id_project_owner' => 'prohibited',
             'id_supervisor' => 'nullable|integer|exists:user,id_user',
         ]);
 
-        $attributes['id_project_owner'] = Auth::user()->id_user;
+        $yard = new Yard($attributes);
+        $yard->id_project_owner = Auth::user()->id_user;
 
-        return self::created(
-            Yard::query()->create($attributes)->fresh()
-        );
+        $yard->save();
+        return self::created($yard->fresh());
     }
 
     /**

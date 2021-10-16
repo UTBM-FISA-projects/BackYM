@@ -19,7 +19,7 @@ class YardPolicy
 
     public function create($user): bool
     {
-        return $user->type === 'moa';
+        return $user->type === 'project_owner';
     }
 
     public function delete($user, Yard $yard): bool
