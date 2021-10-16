@@ -12,7 +12,6 @@ class Yard extends BaseModel
         'description',
         'deadline',
         'archived',
-        'id_project_owner',
         'id_supervisor',
     ];
 
