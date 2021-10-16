@@ -112,7 +112,9 @@ class UserController extends BaseController
         ]);
 
         $user = new User($attributes);
+        $user->type = $attributes['type'];
         $user->password = $attributes['password'];
+        $user->id_enterprise = $attributes['id_enterprise'] ?? null;
 
         $user->save();
         return self::created($user->fresh());
