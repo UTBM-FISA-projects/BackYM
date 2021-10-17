@@ -92,6 +92,7 @@ $app->routeMiddleware([
 
 $app->register(App\Providers\AuthServiceProvider::class);
 $app->register(CollectionServiceProvider::class);
+$app->register(Flipbox\LumenGenerator\LumenGeneratorServiceProvider::class);
 
 /*
 |--------------------------------------------------------------------------
