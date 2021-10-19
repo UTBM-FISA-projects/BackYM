@@ -3,6 +3,8 @@
 /** @var \Laravel\Lumen\Routing\Router $router */
 
 $router->group(['middleware' => 'auth'], function () use ($router) {
+    $router->get('/users/current', ['uses' => 'UserController@showCurrent']);
+
     $router->get('/users/{id:[1-9]\d*}', ['uses' => 'UserController@show']);
 
     $router->get('/users/{id:[1-9]\d*}/availabilities', ['uses' => 'UserController@getAvailabilities']);

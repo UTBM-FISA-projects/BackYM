@@ -10,6 +10,19 @@ use Illuminate\Support\Facades\Auth;
 class UserController extends BaseController
 {
     /**
+     * Récupère l'utilisateur courrament authentifié.
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function showCurrent(): JsonResponse
+    {
+        $id_user = Auth::user()->id_user;
+        $user = User::query()->findOrFail($id_user);
+
+        return self::ok($user);
+    }
+
+    /**
      * Récupère un utilisateur selon son id
      *
      * @param int $id
