@@ -110,6 +110,7 @@ $app->router->group([
 ], function ($router) {
     require __DIR__ . '/../routes/yard.php';
     require __DIR__ . '/../routes/user.php';
+    require __DIR__ . '/../routes/login.php';
 });
 
 return $app;

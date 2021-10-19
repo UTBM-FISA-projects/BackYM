@@ -50,4 +50,9 @@ class BaseController extends Controller
     {
         return response()->json([], 204);
     }
+
+    public static function unauthorized(): JsonResponse
+    {
+        return response()->json(null, 401);
+    }
 }
