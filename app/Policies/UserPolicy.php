@@ -8,7 +8,9 @@ class UserPolicy
 {
     public function show($authUser, User $requestedUser): bool
     {
-        return $authUser->id_user === $requestedUser->id_user;
+        return $authUser->id_user === $requestedUser->id_user
+            || $authUser->id_enterprise === $requestedUser->id_user
+            || $authUser->id_user === $requestedUser->id_enterprise;
     }
 
     public function getYards($authUser, User $requestedUser): bool
