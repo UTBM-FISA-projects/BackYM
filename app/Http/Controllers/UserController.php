@@ -91,14 +91,15 @@ class UserController extends BaseController
      */
     public function update(Request $request): JsonResponse
     {
+        $user = User::query()->findOrFail(Auth::user()->id_user);
+
         $attributes = $this->validate($request, [
             'name' => 'string|max:255',
             'description' => 'string|max:255',
-            'email' => 'email|max:255|unique:user,email',
+            'email' => 'email|max:255|unique:App\Models\User,email,' . $user->id_user,
             'phone' => 'string|max:255',
         ]);
 
-        $user = User::query()->findOrFail(Auth::user()->id_user);
         $user->update($attributes);
 
         return self::updated($user);
