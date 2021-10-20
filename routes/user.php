@@ -14,6 +14,8 @@ $router->group(['middleware' => 'auth'], function () use ($router) {
     $router->get('/users/{id:[1-9]\d*}/yards', ['uses' => 'UserController@getYards']);
 
     $router->put('/users', ['uses' => 'UserController@update']);
+
+    $router->put('/users/password', ['uses' => 'UserController@changePassword']);
 });
 
 $router->post('/users', ['uses' => 'UserController@create']);

@@ -105,6 +105,31 @@ class UserController extends BaseController
     }
 
     /**
+     * Change le mot de passe de l'utilisateur authentifié.
+     *
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\JsonResponse
+     * @throws \Illuminate\Validation\ValidationException
+     */
+    public function changePassword(Request $request): JsonResponse
+    {
+        $this->validate($request, [
+            'old_password' => 'required|string|max:255',
+            'password' => 'required|string|confirmed|max:255',
+            'password_confirmation' => 'required|string|max:255',
+        ]);
+
+        $user = User::query()
+            ->where('password', $request->json('old_password'))
+            ->findOrFail(Auth::user()->id_user);
+
+        $user->password = $request->json('password');
+        $user->save();
+
+        return self::updated($user);
+    }
+
+    /**
      * Créer un nouvel utilisateur.
      *
      * @param \Illuminate\Http\Request $request
