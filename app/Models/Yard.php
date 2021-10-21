@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Support\Facades\DB;
 
 class Yard extends BaseModel
 {
@@ -23,6 +24,10 @@ class Yard extends BaseModel
         'archived',
         'supervisor',
         'project_owner',
+        'total_tasks',
+        'done_tasks',
+        'total_estimated_time',
+        'total_time_spent',
     ];
 
     protected $casts = [
@@ -39,6 +44,55 @@ class Yard extends BaseModel
         'supervisor',
         'project_owner',
     ];
+
+    protected $appends = [
+        'total_tasks',
+        'done_tasks',
+        'total_estimated_time',
+        'total_time_spent',
+    ];
+
+    /**
+     * Récupère le nombre de missions total sur le chantier.
+     * @return int
+     */
+    public function getTotalTasksAttribute(): int
+    {
+        return $this->tasks()->count();
+    }
+
+    /**
+     * Récupère le nombre de missions éffectuées sur le chantier.
+     * @return int
+     */
+    public function getDoneTasksAttribute(): int
+    {
+        return $this->tasks()->where('state', 'done')->count();
+    }
+
+    /**
+     * Récupère le temps total estimé des missions.
+     * @return string
+     */
+    public function getTotalEstimatedTimeAttribute(): string
+    {
+        $total = $this->tasks()->sum(DB::raw('TIME_TO_SEC(estimated_time)'));
+        $h = floor($total / 3600);
+        $m = $total / 60 % 60;
+        return substr("0" . $h, -2) . ":" . substr("0" . $m, -2);
+    }
+
+    /**
+     * Récupère le temps passé total des missions.
+     * @return string
+     */
+    public function getTotalTimeSpentAttribute(): string
+    {
+        $total = $this->tasks()->sum(DB::raw('TIME_TO_SEC(time_spent)'));
+        $h = floor($total / 3600);
+        $m = $total / 60 % 60;
+        return substr("0" . $h, -2) . ":" . substr("0" . $m, -2);
+    }
 
     /**
      * Un chantier possède des missions
