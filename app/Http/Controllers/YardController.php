@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Yard;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -14,14 +15,28 @@ class YardController extends BaseController
      *
      * @param int $id ID du chantier
      * @throws \Illuminate\Auth\Access\AuthorizationException
+     * @throws \Illuminate\Validation\ValidationException
      */
-    public function getTasks(int $id): JsonResponse
+    public function getTasks(Request $request, int $id): JsonResponse
     {
         $yard = Yard::query()->findOrFail($id);
 
         $this->authorize('getTasks', $yard);
 
-        return self::ok($yard->tasks->paginate());
+        $this->validate($request, [
+            'state' => 'in:todo,doing,done',
+        ]);
+
+        $state = $request->query('state');
+
+        return self::ok(
+            $yard
+                ->tasks
+                ->when($state, function (Collection $query, $state) {
+                    return $query->where('state', $state);
+                })
+                ->paginate()
+        );
     }
 
     /**
