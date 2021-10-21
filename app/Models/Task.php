@@ -14,7 +14,7 @@ class Task extends BaseModel
     ];
 
     protected $visible = [
-        'id_mission',
+        'id_task',
         'title',
         'description',
         'state',
