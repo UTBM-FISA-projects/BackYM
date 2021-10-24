@@ -26,11 +26,7 @@ class UserFactory extends Factory
             'token' => null,
             'token_gentime' => null,
             'id_enterprise' => $type == 'supervisor' ?
-                User::query()
-                    ->where('type', 'enterprise')
-                    ->get()
-                    ->random()
-                    ->id_user
+                1
                 : null,
         ];
     }
