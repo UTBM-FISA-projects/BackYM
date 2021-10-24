@@ -111,6 +111,7 @@ $app->router->group([
     require __DIR__ . '/../routes/yard.php';
     require __DIR__ . '/../routes/user.php';
     require __DIR__ . '/../routes/login.php';
+    require __DIR__ . '/../routes/availability.php';
 });
 
 return $app;

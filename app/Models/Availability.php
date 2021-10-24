@@ -7,7 +7,6 @@ class Availability extends BaseModel
     protected $fillable = [
         'start',
         'end',
-        'id_user',
     ];
 
     protected $visible = [
