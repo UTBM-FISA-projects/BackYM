@@ -14,16 +14,24 @@ class UserFactory extends Factory
      */
     public function definition(): array
     {
+        $type = $this->faker->randomElement(['project_owner', 'enterprise', 'supervisor']);
+
         return [
             'name' => $this->faker->name,
             'description' => $this->faker->optional->text(),
-            'type' => $this->faker->randomElement(['project_owner', 'enterprise', 'supervisor']),
+            'type' => $type,
             'email' => $this->faker->email,
             'phone' => $this->faker->optional->phoneNumber(),
             'password' => $this->faker->sha256,
             'token' => null,
             'token_gentime' => null,
-            'id_enterprise' => null,
+            'id_enterprise' => $type == 'supervisor' ?
+                User::query()
+                    ->where('type', 'enterprise')
+                    ->get()
+                    ->random()
+                    ->id_user
+                : null,
         ];
     }
 }
