@@ -39,6 +39,12 @@ class AvailabilityController extends BaseController
             return $item;
         });
 
+        // Supprime
+        Availability::query()
+            ->whereNotIn('id_availability', $attributes->pluck('id_availability'))
+            ->delete();
+
+        // Met à jour ou créé
         Availability::query()->upsert(
             $attributes->toArray(),
             ['id_availability'],
