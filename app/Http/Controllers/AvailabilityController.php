@@ -41,6 +41,7 @@ class AvailabilityController extends BaseController
 
         // Supprime
         Availability::query()
+            ->where('id_user', $id_user)
             ->whereNotIn('id_availability', $attributes->pluck('id_availability'))
             ->delete();
 
