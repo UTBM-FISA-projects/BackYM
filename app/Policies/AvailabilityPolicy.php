@@ -11,6 +11,11 @@ class AvailabilityPolicy
         return $user->id_user === $availability->id_user;
     }
 
+    public function massUpdate($user): bool
+    {
+        return $user->type === 'enterprise';
+    }
+
     public function create($user): bool
     {
         return $user->type === 'enterprise';
