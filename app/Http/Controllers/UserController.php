@@ -158,4 +158,18 @@ class UserController extends BaseController
         $user->save();
         return self::created($user->fresh());
     }
+
+    /**
+     * Récupère les employés d'une entreprise
+     * @param int $id
+     * @return JsonResponse
+     */
+    public function getEmployees(int $id): JsonResponse
+    {
+
+        $this->authorize('getEmployees', $id);
+        $employees=User::query()->where("id_enterprise",$id)->get();
+        return self::ok($employees->paginate());
+
+    }
 }
