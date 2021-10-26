@@ -79,7 +79,7 @@ class Yard extends BaseModel
         $total = $this->tasks()->sum(DB::raw('TIME_TO_SEC(estimated_time)'));
         $h = floor($total / 3600);
         $m = $total / 60 % 60;
-        return substr("0" . $h, -2) . ":" . substr("0" . $m, -2);
+        return sprintf("%-2d:%-2d", $h, $m);
     }
 
     /**
@@ -91,7 +91,7 @@ class Yard extends BaseModel
         $total = $this->tasks()->sum(DB::raw('TIME_TO_SEC(time_spent)'));
         $h = floor($total / 3600);
         $m = $total / 60 % 60;
-        return substr("0" . $h, -2) . ":" . substr("0" . $m, -2);
+        return sprintf("%-2d:%-2d", $h, $m);
     }
 
     /**
