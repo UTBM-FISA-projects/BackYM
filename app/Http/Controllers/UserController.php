@@ -163,13 +163,14 @@ class UserController extends BaseController
      * Récupère les employés d'une entreprise
      * @param int $id
      * @return JsonResponse
+     * @throws \Illuminate\Auth\Access\AuthorizationException
      */
     public function getEmployees(int $id): JsonResponse
     {
-
         $this->authorize('getEmployees', $id);
-        $employees=User::query()->where("id_enterprise",$id)->get();
-        return self::ok($employees->paginate());
 
+        $employees=User::query()->where("id_enterprise",$id)->get();
+
+        return self::ok($employees->paginate());
     }
 }

@@ -3,7 +3,6 @@
 namespace App\Policies;
 
 use App\Models\User;
-use Illuminate\Http\JsonResponse;
 
 class UserPolicy
 {
@@ -33,16 +32,14 @@ class UserPolicy
     }
 
     /**
-     *
      * Vérifie l'autorisation de récupérer les employés d'une entreprise
      *
-     * @param $user
+     * @param     $user
+     * @param int $id
      * @return bool
      */
     public function getEmployees($user,int $id) : bool
     {
-
         return $user->id_user === $id && $user->type==="enterprise";
-
     }
 }
