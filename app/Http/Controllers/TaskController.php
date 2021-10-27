@@ -25,14 +25,14 @@ class TaskController extends BaseController
 
         $attributes = $this->validate($request, [
             'title' => 'string|max:255',
-            'description' => 'string|max:255',
+            'description' => 'nullable|string|max:255',
             'state' => 'in:todo,doing,done',
-            'estimated_time' => 'regex:/\d{2,}:[0-5]\d/',
-            'time_spent' => 'regex:/\d{2,}:[0-5]\d/',
-            'start_planned_date' => 'date|before:end_planned_date',
-            'end_planned_date' => 'date|after:start_planned_date',
-            'supervisor_validated' => 'boolean',
-            'executor_validated' => 'boolean',
+            'estimated_time' => 'nullable|regex:/\d{2,}:[0-5]\d/',
+            'time_spent' => 'nullable|regex:/\d{2,}:[0-5]\d/',
+            'start_planned_date' => 'nullable|date|before:end_planned_date',
+            'end_planned_date' => 'nullable|date|after:start_planned_date',
+            'supervisor_validated' => 'nullable|boolean',
+            'executor_validated' => 'nullable|boolean',
             'id_executor' => 'integer|exists:user,id_user',
         ]);
 
@@ -54,17 +54,17 @@ class TaskController extends BaseController
         $this->authorize('create');
 
         $attributes = $this->validate($request, [
-            'title' => 'requiredstring|max:255',
-            'description' => 'string|max:255',
+            'title' => 'required|string|max:255',
+            'description' => 'nullable|string|max:255',
             'state' => 'in:todo,doing,done',
-            'estimated_time' => 'regex:/\d{2,}:[0-5]\d/',
-            'time_spent' => 'regex:/\d{2,}:[0-5]\d/',
-            'start_planned_date' => 'date|before:end_planned_date',
-            'end_planned_date' => 'date|after:start_planned_date',
-            'supervisor_validated' => 'boolean',
-            'executor_validated' => 'boolean',
-            'id_executor' => 'integer|exists:user,id_user',
-            'id_yard' => 'required|integer|exists:yard,id_yard'
+            'estimated_time' => 'nullable|regex:/\d{2,}:[0-5]\d/',
+            'time_spent' => 'nullable|regex:/\d{2,}:[0-5]\d/',
+            'start_planned_date' => 'nullable|date|before:end_planned_date',
+            'end_planned_date' => 'nullable|date|after:start_planned_date',
+            'supervisor_validated' => 'nullable|boolean',
+            'executor_validated' => 'nullable|boolean',
+            'id_executor' => 'nullable|integer|exists:user,id_user',
+            'id_yard' => 'required|integer|exists:yard,id_yard',
         ]);
 
         $task = new Task($attributes);
