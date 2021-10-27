@@ -6,6 +6,7 @@ use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use Symfony\Component\HttpFoundation\Cookie;
 
@@ -45,6 +46,31 @@ class LoginController extends BaseController
                 'token',
                 $token,
                 Carbon::now()->addHours(24),
+                '/',
+                null,
+                !env("APP_DEBUG"),
+                true,
+            )
+        );
+    }
+
+    /**
+     * Déconnecte un client du site en supprimant le token front et back.
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function logout(): JsonResponse
+    {
+        $user = Auth::user();
+        $user->token = null;
+        $user->token_gentime = null;
+        $user->save();
+
+        return self::ok(null)->cookie(
+            new Cookie(
+                'token',
+                null,
+                Carbon::createFromTimestamp(0),
                 '/',
                 null,
                 !env("APP_DEBUG"),
