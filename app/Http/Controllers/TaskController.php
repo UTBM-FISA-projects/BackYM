@@ -51,7 +51,7 @@ class TaskController extends BaseController
      */
     public function create(Request $request):JsonResponse
     {
-        $this->authorize('create');
+        $this->authorize('create', Task::class);
 
         $attributes = $this->validate($request, [
             'title' => 'required|string|max:255',

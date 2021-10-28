@@ -77,7 +77,7 @@ class YardController extends BaseController
      */
     public function post(Request $request): JsonResponse
     {
-        $this->authorize('create');
+        $this->authorize('create', Yard::class);
 
         $attributes = $this->validate($request, [
             'name' => 'required|string|max:255',

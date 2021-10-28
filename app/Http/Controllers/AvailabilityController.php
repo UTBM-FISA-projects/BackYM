@@ -22,7 +22,7 @@ class AvailabilityController extends BaseController
      */
     public function massUpdate(Request $request): JsonResponse
     {
-        $this->authorize('massUpdate');
+        $this->authorize('massUpdate', Availability::class);
 
         $this->validate($request, [
             '*.start' => 'required|date|before:*.end',
