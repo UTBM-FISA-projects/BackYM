@@ -6,7 +6,9 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Notification extends BaseModel
 {
-    protected $fillable = [];
+    protected $fillable = [
+        'is_read',
+    ];
 
     protected $visible = [
         'id_notification',
@@ -25,6 +27,25 @@ class Notification extends BaseModel
         'id_recipient' => 'integer',
         'id_notification_type' => 'integer',
     ];
+
+    /**
+     * Créer une notification pour une proposition de chantier
+     *
+     * @param int $recipient
+     * @param int $enterprise
+     * @param int $yard
+     */
+    public static function createProposition(int $recipient, int $enterprise, int $yard)
+    {
+        $notif = new Notification();
+        $notif->id_notification_type = NotificationType::$PROPOSITION;
+        $notif->id_recipient = $recipient;
+        $notif->parameters = [
+            'enterprise' => $enterprise,
+            'yard' => $yard,
+        ];
+        $notif->save();
+    }
 
     /**
      * Récupère le type d'une notification.
