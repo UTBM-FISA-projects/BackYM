@@ -16,10 +16,7 @@ class UserController extends BaseController
      */
     public function showCurrent(): JsonResponse
     {
-        $id_user = Auth::user()->id_user;
-        $user = User::query()->findOrFail($id_user);
-
-        return self::ok($user);
+        return self::ok(Auth::user());
     }
 
     /**
@@ -77,9 +74,7 @@ class UserController extends BaseController
      */
     public function getNotifications(): JsonResponse
     {
-        $user = User::query()->findOrFail(Auth::user()->id_user);
-
-        return self::ok($user->notifications->paginate());
+        return self::ok(Auth::user()->notifications->paginate());
     }
 
     /**
@@ -91,7 +86,7 @@ class UserController extends BaseController
      */
     public function update(Request $request): JsonResponse
     {
-        $user = User::query()->findOrFail(Auth::user()->id_user);
+        $user = Auth::user();
 
         $attributes = $this->validate($request, [
             'name' => 'string|max:255',
@@ -169,8 +164,29 @@ class UserController extends BaseController
     {
         $this->authorize('getEmployees', $id);
 
-        $employees=User::query()->where("id_enterprise",$id)->get();
+        $employees = User::query()->where("id_enterprise", $id)->get();
 
         return self::ok($employees->paginate());
+    }
+
+    /**
+     * Récupère toutes les entreprises selon les filtres donnés.
+     *
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\JsonResponse
+     * @throws \Illuminate\Auth\Access\AuthorizationException
+     */
+    public function getEnterprises(Request $request): JsonResponse
+    {
+        $this->authorize('getEnterprises', User::class);
+
+        $enterprises = User::query()
+            ->where('type', 'enterprise')
+            ->when($request->query('q'), function ($query) use ($request) {
+                return $query->where('name', 'like', "%{$request->query('q')}%");
+            })
+            ->get();
+
+        return self::ok($enterprises->paginate());
     }
 }

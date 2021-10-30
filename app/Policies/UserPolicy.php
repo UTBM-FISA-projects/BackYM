@@ -38,8 +38,13 @@ class UserPolicy
      * @param int $id
      * @return bool
      */
-    public function getEmployees($user,int $id) : bool
+    public function getEmployees($user, int $id): bool
     {
-        return $user->id_user === $id && $user->type==="enterprise";
+        return $user->id_user === $id && $user->type === "enterprise";
+    }
+
+    public function getEnterprises(User $user): bool
+    {
+        return $user->type === 'project_owner';
     }
 }
