@@ -4,6 +4,8 @@ namespace App\Models;
 
 class NotificationType extends BaseModel
 {
+    static int $PROPOSITION = 1;
+
     protected $fillable = [];
 
     protected $visible = [

@@ -2,11 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Notification;
+use App\Models\Proposal;
 use App\Models\Yard;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class YardController extends BaseController
 {
@@ -85,13 +88,36 @@ class YardController extends BaseController
             'deadline' => 'nullable|date|after:now',
             'archived' => 'prohibited',
             'id_supervisor' => 'nullable|integer|exists:user,id_user',
+            'proposals.*' => 'integer',
         ]);
 
-        $yard = new Yard($attributes);
-        $yard->id_project_owner = Auth::user()->id_user;
+        $yard = DB::transaction(function () use ($attributes, $request) {
+            // adding new yard
+            $yard = new Yard($attributes);
+            $yard->id_project_owner = Auth::user()->id_user;
+            $yard->save();
+            $yard = $yard->fresh();
 
-        $yard->save();
-        return self::created($yard->fresh());
+            collect($request->json('proposals', []))
+                ->each(function ($id_enterprise) use ($yard) {
+                    // adding new proposal
+                    $prop = new Proposal();
+                    $prop->id_yard = $yard->id_yard;
+                    $prop->id_recipient = $id_enterprise;
+                    $prop->save();
+
+                    // adding related notification
+                    Notification::createProposition(
+                        $id_enterprise,
+                        Auth::user()->id_user,
+                        $yard->id_yard
+                    );
+                });
+
+            return $yard;
+        });
+
+        return self::created($yard);
     }
 
     /**
