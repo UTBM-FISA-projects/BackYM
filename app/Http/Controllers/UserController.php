@@ -162,7 +162,9 @@ class UserController extends BaseController
      */
     public function getEmployees(int $id): JsonResponse
     {
-        $this->authorize('getEmployees', $id);
+        $enterprise = User::query()->findOrFail($id);
+
+        $this->authorize('getEmployees', $enterprise);
 
         $employees = User::query()->where("id_enterprise", $id)->get();
 
