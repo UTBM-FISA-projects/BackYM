@@ -17,17 +17,17 @@ class NotificationTypeTableSeeder extends Seeder
         NotificationType::query()->create([
             'id_notification_type' => 1,
             'title' => 'proposition',
-            'template' => 'L\'entreprise ${entreprise} vous propose le chantier ${chantier}.',
+            'template' => 'Le client ${project_owner} vous propose le chantier ${yard}.',
         ]);
         NotificationType::query()->create([
             'id_notification_type' => 2,
             'title' => 'proposition_mission',
-            'template' => 'L\'entreprise ${entreprise} vous propose la mission ${mission} sur le chantier ${chantier}.',
+            'template' => 'L\'entreprise ${enterprise} vous propose la mission ${task} sur le chantier ${yard}.',
         ]);
         NotificationType::query()->create([
             'id_notification_type' => 3,
             'title' => 'overtime',
-            'template' => 'La mission ${mission} à dépassée son temps estimé.',
+            'template' => 'La mission ${task} à dépassée son temps estimé.',
         ]);
     }
 }
