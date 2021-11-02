@@ -25,6 +25,7 @@ class UserFactory extends Factory
             'password' => $this->faker->sha256,
             'token' => null,
             'token_gentime' => null,
+            'siret' => null,
             'id_enterprise' => $type == 'supervisor' ?
                 1
                 : null,

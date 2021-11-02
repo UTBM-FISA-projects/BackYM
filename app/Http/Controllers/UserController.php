@@ -147,6 +147,7 @@ class UserController extends BaseController
             'phone' => 'string|max:255',
             'password' => 'required|string|confirmed|max:255',
             'password_confirmation' => 'required|string|max:255',
+            'siret' =>'int|max:11',
             'id_enterprise' => 'integer|required_if:type,supervisor|prohibited_if:type,project_owner,enterprise|exists:user,id_user',
         ]);
 
