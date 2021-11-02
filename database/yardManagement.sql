@@ -19,6 +19,7 @@ create table user
     phone         varchar(255),
     password      varchar(255)                                       not null,
     token         varchar(255) unique,
+    siret         integer                                            null,
     token_gentime datetime,
     id_enterprise bigint unsigned,
     constraint user_enterprise foreign key (id_enterprise) references user (id_user) on delete cascade
