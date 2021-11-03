@@ -74,8 +74,8 @@ class Notification extends BaseModel
         $notif = new Notification();
         $notif->id_notification_type = NotificationType::$PROPOSITION;
         $notif->id_recipient = $recipient;
-        $notif->notificationsParameters = [
-            'enterprise' => $enterprise,
+        $notif->parameters = [
+            'project_owner' => $enterprise,
             'yard' => $yard,
         ];
         $notif->save();
