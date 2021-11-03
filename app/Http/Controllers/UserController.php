@@ -142,7 +142,7 @@ class UserController extends BaseController
             'phone' => 'string|max:255',
             'password' => 'required|string|confirmed|max:255',
             'password_confirmation' => 'required|string|max:255',
-            'siret' =>'int|max:11',
+            'siret' =>'required_if:type,enterprise|string|size:14',
             'id_enterprise' => 'integer|required_if:type,supervisor|prohibited_if:type,project_owner,enterprise|exists:user,id_user',
         ]);
 
@@ -191,5 +191,48 @@ class UserController extends BaseController
             ->get();
 
         return self::ok($enterprises->paginate());
+    }
+
+    /**
+     * Vérification numéro SIRET d'une entreprise grâce à l'algorithme de Luhn
+     * @param string $siret
+     * @return bool
+     * @see https://portal.hardis-group.com/pages/viewpage.action?pageId=120357227
+     */
+    public function isValidSiret(string $siret): bool // $siret est un string
+    {
+
+        if(strlen($siret)!=14 or !is_numeric($siret)){
+            return false;
+        }
+
+        $somme = 0;
+
+        for($x = 0; $x < 13; $x++){
+
+            if($siret%2!=0){
+
+                $siretx = (int)$siret[$x] * 2;
+
+                if($siretx>=10){
+
+                    $somme+= 1 + $siretx%10;
+
+                }
+                else{
+
+                    $somme+=$siretx;
+
+                }
+            }
+            else{
+
+                $somme+=(int)$siret[$x];
+
+            }
+        }
+
+        return $somme%10==1 or $somme%10==2;
+
     }
 }
