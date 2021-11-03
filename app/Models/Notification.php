@@ -16,7 +16,7 @@ class Notification extends BaseModel
         'is_read',
         'parameters',
         'id_recipient',
-        'id_notification_type',
+        'notificationType',
     ];
 
     protected $casts = [
@@ -27,6 +27,40 @@ class Notification extends BaseModel
         'id_recipient' => 'integer',
         'id_notification_type' => 'integer',
     ];
+
+    protected $with = [
+        'notificationType',
+    ];
+
+    /**
+     * Mapping des paramètres à leur classe.
+     *
+     * @var string[]
+     */
+    private static array $parameters = [
+        'yard' => Yard::class,
+        'project_owner' => User::class,
+        'enterprise' => User::class,
+        'task' => Task::class,
+    ];
+
+    /**
+     * Récupère les objets liés aux ID en paramètre.
+     *
+     * @param $paramters
+     * @return array
+     */
+    public function getParametersAttribute($paramters): array
+    {
+        $params = [];
+
+        foreach (json_decode($paramters) as $key => $value) {
+            $class = Notification::$parameters[$key];
+            $params[$key] = call_user_func([$class, 'query'])->find($value);
+        }
+
+        return $params;
+    }
 
     /**
      * Créer une notification pour une proposition de chantier
@@ -40,7 +74,7 @@ class Notification extends BaseModel
         $notif = new Notification();
         $notif->id_notification_type = NotificationType::$PROPOSITION;
         $notif->id_recipient = $recipient;
-        $notif->parameters = [
+        $notif->notificationsParameters = [
             'enterprise' => $enterprise,
             'yard' => $yard,
         ];

@@ -9,13 +9,13 @@ class NotificationType extends BaseModel
     protected $fillable = [];
 
     protected $visible = [
-        'id_type_notification',
+        'id_notification_type',
         'title',
         'template',
     ];
 
     protected $casts = [
-        'id_type_notification' => 'integer',
+        'id_notification_type' => 'integer',
         'title' => 'string',
         'template' => 'string',
     ];
