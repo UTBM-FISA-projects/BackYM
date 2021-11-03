@@ -21,6 +21,7 @@ class User extends BaseModel
         'email',
         'phone',
         'id_enterprise',
+        'siret',
     ];
 
     protected $casts = [
@@ -34,6 +35,7 @@ class User extends BaseModel
         'token' => 'string',
         'token_gentime' => 'datetime',
         'id_enterprise' => 'integer',
+        'siret' => 'integer',
     ];
 
     /**
