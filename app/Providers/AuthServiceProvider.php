@@ -3,10 +3,12 @@
 namespace App\Providers;
 
 use App\Models\Availability;
+use App\Models\Notification;
 use App\Models\Task;
 use App\Models\User;
 use App\Models\Yard;
 use App\Policies\AvailabilityPolicy;
+use App\Policies\NotificationPolicy;
 use App\Policies\TaskPolicy;
 use App\Policies\UserPolicy;
 use App\Policies\YardPolicy;
@@ -62,5 +64,6 @@ class AuthServiceProvider extends ServiceProvider
         Gate::policy(User::class, UserPolicy::class);
         Gate::policy(Availability::class, AvailabilityPolicy::class);
         Gate::policy(Task::class, TaskPolicy::class);
+        Gate::policy(Notification::class, NotificationPolicy::class);
     }
 }
