@@ -74,14 +74,7 @@ class UserController extends BaseController
      */
     public function getNotifications(): JsonResponse
     {
-        $notifications = Auth::user()
-            ->notifications()              // notification d'un utilisateur
-            ->where(function ($query) {    // non lu => soit 0, soit null
-                $query->whereNull('is_read')
-                    ->orWhere('is_read', false);
-            })
-            ->paginate();
-        return self::ok($notifications);
+        return self::ok(Auth::user()->notifications->paginate());
     }
 
     /**

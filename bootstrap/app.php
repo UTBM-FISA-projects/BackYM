@@ -113,7 +113,6 @@ $app->router->group([
     require __DIR__ . '/../routes/login.php';
     require __DIR__ . '/../routes/availability.php';
     require __DIR__ . '/../routes/task.php';
-    require __DIR__ . '/../routes/notification.php';
 });
 
 return $app;
