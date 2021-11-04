@@ -103,6 +103,27 @@ class Notification extends BaseModel
     }
 
     /**
+     * Créé une notification pour une tache dont le temps passé dépasse le temps estimé.
+     *
+     * @param int|null $recipient
+     * @param int      $task
+     */
+    public static function createTaskOvertime(?int $recipient, int $task)
+    {
+        if (is_null($recipient)) {
+            return;
+        }
+
+        $notif = new Notification();
+        $notif->id_notification_type = NotificationType::$OVERTIME;
+        $notif->id_recipient = $recipient;
+        $notif->parameters = [
+            'task' => $task,
+        ];
+        $notif->save();
+    }
+
+    /**
      * Récupère le type d'une notification.
      */
     public function notificationType(): BelongsTo

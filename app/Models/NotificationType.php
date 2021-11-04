@@ -6,6 +6,7 @@ class NotificationType extends BaseModel
 {
     static int $PROPOSAL = 1;
     static int $TASK_PROPOSAL = 2;
+    static int $OVERTIME = 3;
 
     protected $fillable = [];
 
