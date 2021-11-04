@@ -72,10 +72,31 @@ class Notification extends BaseModel
     public static function createProposition(int $recipient, int $enterprise, int $yard)
     {
         $notif = new Notification();
-        $notif->id_notification_type = NotificationType::$PROPOSITION;
+        $notif->id_notification_type = NotificationType::$PROPOSAL;
         $notif->id_recipient = $recipient;
         $notif->parameters = [
             'project_owner' => $enterprise,
+            'yard' => $yard,
+        ];
+        $notif->save();
+    }
+
+    /**
+     * Créé une notification pour une proposition de mission.
+     *
+     * @param int $recipient
+     * @param int $enterprise
+     * @param int $task
+     * @param int $yard
+     */
+    public static function createTaskProposition(int $recipient, int $enterprise, int $task, int $yard)
+    {
+        $notif = new Notification();
+        $notif->id_notification_type = NotificationType::$TASK_PROPOSAL;
+        $notif->id_recipient = $recipient;
+        $notif->parameters = [
+            'enterprise' => $enterprise,
+            'task' => $task,
             'yard' => $yard,
         ];
         $notif->save();

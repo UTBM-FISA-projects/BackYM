@@ -2,9 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Notification;
 use App\Models\Task;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class TaskController extends BaseController
 {
@@ -35,6 +38,8 @@ class TaskController extends BaseController
             'executor_validated' => 'nullable|boolean',
             'id_executor' => 'integer|exists:user,id_user',
         ]);
+
+        // TODO: time spent notification
 
         $task->update($attributes);
 
@@ -67,10 +72,26 @@ class TaskController extends BaseController
             'id_yard' => 'required|integer|exists:yard,id_yard',
         ]);
 
-        $task = new Task($attributes);
-        $task->id_yard = $attributes['id_yard'];
-        $task->save();
+        // TODO: time spent notification
 
-        return self::created($task->fresh());
+        $task = DB::transaction(function () use ($attributes) {
+            $task = new Task($attributes);
+            $task->id_yard = $attributes['id_yard'];
+            $task->save();
+            $task = $task->fresh();
+
+            if (isset($attributes['id_executor'])) {
+                Notification::createTaskProposition(
+                    $attributes['id_executor'],
+                    Auth::user()->id_user,
+                    $task->id_task,
+                    $attributes['id_yard']
+                );
+            }
+
+            return $task;
+        });
+
+        return self::created($task);
     }
 }

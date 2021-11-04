@@ -16,7 +16,6 @@ class Task extends BaseModel
         'end_planned_date',
         'supervisor_validated',
         'executor_validated',
-        'id_executor',
     ];
 
     protected $visible = [
