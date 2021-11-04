@@ -12,14 +12,14 @@ drop table if exists user;
 create table user
 (
     id_user       bigint unsigned primary key auto_increment,
-    name          varchar(255)                                       not null,
+    name          varchar(255)        not null,
     description   varchar(255),
     type          enum ('project_owner', 'enterprise', 'supervisor') not null,
-    email         varchar(255) unique                                not null,
+    email         varchar(255) unique not null,
     phone         varchar(255),
-    password      varchar(255)                                       not null,
+    password      varchar(255)        not null,
     token         varchar(255) unique,
-    siret         integer                                            null,
+    siret         bigint unsigned unique null,
     token_gentime datetime,
     id_enterprise bigint unsigned,
     constraint user_enterprise foreign key (id_enterprise) references user (id_user) on delete cascade
@@ -31,8 +31,8 @@ create table user
 create table availability
 (
     id_availability bigint unsigned primary key auto_increment,
-    start           datetime        not null,
-    end             datetime        not null,
+    start           datetime not null,
+    end             datetime not null,
     id_user         bigint unsigned not null,
     constraint availability_user foreign key (id_user) references user (id_user) on delete cascade
 );
@@ -43,7 +43,7 @@ create table availability
 create table yard
 (
     id_yard          bigint unsigned primary key auto_increment,
-    name             varchar(255)    not null,
+    name             varchar(255) not null,
     description      varchar(255),
     deadline         date,
     archived         bool,
@@ -59,7 +59,7 @@ create table yard
 create table task
 (
     id_task              bigint unsigned primary key auto_increment,
-    title                varchar(255)                   not null,
+    title                varchar(255) not null,
     description          varchar(255),
     state                enum ('todo', 'doing', 'done') not null default 'todo',
     estimated_time       time,
@@ -69,7 +69,7 @@ create table task
     supervisor_validated bool,
     executor_validated   bool,
     id_executor          bigint unsigned,
-    id_yard              bigint unsigned                not null,
+    id_yard              bigint unsigned not null,
     constraint task_executor foreign key (id_executor) references user (id_user) on delete set null,
     constraint task_yard foreign key (id_yard) references yard (id_yard) on delete cascade
 );
@@ -107,9 +107,9 @@ VALUES (1, 'proposition', 'L\'entreprise ${entreprise} vous propose le chantier 
 create table notification
 (
     id_notification      bigint unsigned primary key auto_increment,
-    creation             datetime        not null default CURRENT_TIMESTAMP,
+    creation             datetime not null default CURRENT_TIMESTAMP,
     is_read              bool,
-    parameters           json            not null,
+    parameters           json     not null,
     id_recipient         bigint unsigned not null,
     id_notification_type bigint unsigned not null,
     constraint notification_recipient foreign key (id_recipient) references user (id_user) on delete cascade,

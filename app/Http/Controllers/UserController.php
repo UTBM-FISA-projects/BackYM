@@ -6,6 +6,8 @@ use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationException;
 
 class UserController extends BaseController
 {
@@ -142,14 +144,23 @@ class UserController extends BaseController
             'phone' => 'string|max:255',
             'password' => 'required|string|confirmed|max:255',
             'password_confirmation' => 'required|string|max:255',
-            'siret' =>'required_if:type,enterprise|string|size:14',
+            'siret' => 'nullable|unique:user,siret|required_if:type,enterprise|string|size:14',
             'id_enterprise' => 'integer|required_if:type,supervisor|prohibited_if:type,project_owner,enterprise|exists:user,id_user',
         ]);
+
+        $attributes['siret'] = $attributes['siret'] == '' ? null : $attributes['siret'];
+
+        if ($attributes['siret'] != null && !self::isValidSiret($attributes['siret'])) {
+
+            abort(422);
+
+        }
 
         $user = new User($attributes);
         $user->type = $attributes['type'];
         $user->password = $attributes['password'];
         $user->id_enterprise = $attributes['id_enterprise'] ?? null;
+        $user->siret = $attributes['siret'] ?? null;
 
         $user->save();
         return self::created($user->fresh());
@@ -199,40 +210,38 @@ class UserController extends BaseController
      * @return bool
      * @see https://portal.hardis-group.com/pages/viewpage.action?pageId=120357227
      */
-    public function isValidSiret(string $siret): bool // $siret est un string
+    public static function isValidSiret(string $siret): bool // $siret est un string
     {
 
-        if(strlen($siret)!=14 or !is_numeric($siret)){
+        if (strlen($siret) != 14 or !is_numeric($siret)) {
             return false;
         }
 
         $somme = 0;
 
-        for($x = 0; $x < 13; $x++){
+        for ($x = 0; $x < 14; $x++) {
 
-            if($siret%2!=0){
+            if ($x % 2 == 0) {
 
                 $siretx = (int)$siret[$x] * 2;
 
-                if($siretx>=10){
+                if ($siretx >= 10) {
 
-                    $somme+= 1 + $siretx%10;
+                    $somme += 1 + $siretx % 10;
+
+                } else {
+
+                    $somme += $siretx;
 
                 }
-                else{
+            } else {
 
-                    $somme+=$siretx;
-
-                }
-            }
-            else{
-
-                $somme+=(int)$siret[$x];
+                $somme += (int)$siret[$x];
 
             }
         }
 
-        return $somme%10==1 or $somme%10==2;
+        return $somme % 10 == 0;
 
     }
 }

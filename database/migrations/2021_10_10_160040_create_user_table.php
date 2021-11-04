@@ -23,7 +23,7 @@ class CreateUserTable extends Migration
             $table->string('password');
             $table->string('token')->nullable()->unique();
             $table->dateTime('token_gentime')->nullable();
-            $table->integer('siret')->nullable();
+            $table->unsignedBigInteger('siret')->nullable()->unique();
             $table
                 ->foreignId('id_enterprise')
                 ->nullable()
