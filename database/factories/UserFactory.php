@@ -27,7 +27,7 @@ class UserFactory extends Factory
             'token_gentime' => null,
             'siret' => null,
             'id_enterprise' => $type == 'supervisor' ?
-                1
+                2
                 : null,
         ];
     }

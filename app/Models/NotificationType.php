@@ -4,18 +4,20 @@ namespace App\Models;
 
 class NotificationType extends BaseModel
 {
-    static int $PROPOSITION = 1;
+    static int $PROPOSAL = 1;
+    static int $TASK_PROPOSAL = 2;
+    static int $OVERTIME = 3;
 
     protected $fillable = [];
 
     protected $visible = [
-        'id_type_notification',
+        'id_notification_type',
         'title',
         'template',
     ];
 
     protected $casts = [
-        'id_type_notification' => 'integer',
+        'id_notification_type' => 'integer',
         'title' => 'string',
         'template' => 'string',
     ];

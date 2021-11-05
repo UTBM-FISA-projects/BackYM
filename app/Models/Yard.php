@@ -13,7 +13,6 @@ class Yard extends BaseModel
         'description',
         'deadline',
         'archived',
-        'id_supervisor',
     ];
 
     protected $visible = [

@@ -2,9 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Misc\Time;
+use App\Models\Notification;
 use App\Models\Task;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use InvalidArgumentException;
 
 class TaskController extends BaseController
 {
@@ -36,9 +41,32 @@ class TaskController extends BaseController
             'id_executor' => 'integer|exists:user,id_user',
         ]);
 
-        $task->update($attributes);
+        $task = DB::transaction(function () use ($attributes, $task) {
+            $task->update($attributes);
+            $task = $task->fresh();
 
-        return self::updated($task->fresh());
+            // si le temps passé n'a pas changé on ne crée pas de nouvelles notifications
+            if (!isset($attributes['time_spent'])) {
+                return $task;
+            }
+
+            try {
+                $time_spent = new Time($task->time_spent);
+                $estimated_time = new Time($task->estimated_time);
+
+                if ($time_spent->isGreater($estimated_time)) {
+                    // on notifie le superviseur
+                    Notification::createTaskOvertime($task->yard()->id_supervisor, $task->id_task);
+                    // on notifie l'executant
+                    Notification::createTaskOvertime($task->id_executor, $task->id_task);
+                }
+            } catch (InvalidArgumentException $e) {
+            }
+
+            return $task;
+        });
+
+        return self::updated($task);
     }
 
     /**
@@ -67,10 +95,41 @@ class TaskController extends BaseController
             'id_yard' => 'required|integer|exists:yard,id_yard',
         ]);
 
-        $task = new Task($attributes);
-        $task->id_yard = $attributes['id_yard'];
-        $task->save();
+        $task = DB::transaction(function () use ($attributes) {
+            $task = new Task($attributes);
+            $task->id_yard = $attributes['id_yard'];
+            $task->save();
+            $task = $task->fresh();
 
-        return self::created($task->fresh());
+            if (isset($attributes['id_executor'])) {
+                Notification::createTaskProposition(
+                    $attributes['id_executor'],
+                    Auth::user()->id_user,
+                    $task->id_task,
+                    $attributes['id_yard']
+                );
+            }
+
+            if (!isset($attributes['time_spent']) || !isset($attributes['estimated_time'])) {
+                return $task;
+            }
+
+            try {
+                $spent = new Time($attributes['time_spent']);
+                $estimated = new Time($attributes['estimated_time']);
+
+                if ($spent->isGreater($estimated)) {
+                    // on notifie le superviseur
+                    Notification::createTaskOvertime($task->yard()->id_supervisor, $task->id_task);
+                    // on notifie l'executant
+                    Notification::createTaskOvertime($task->id_executor, $task->id_task);
+                }
+            } catch (InvalidArgumentException $e) {
+            }
+
+            return $task;
+        });
+
+        return self::created($task);
     }
 }

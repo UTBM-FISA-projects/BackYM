@@ -19,7 +19,7 @@ class NotificationFactory extends Factory
         return [
             'creation' => $this->faker->dateTime,
             'is_read' => $this->faker->boolean,
-            'parameters' => json_encode(['toto' => 'tata', 'foo' => ['bar', 'egg']]),
+            'parameters' => ['enterprise' => 2, 'project_owner' => 1, 'yard' => 1],
             'id_recipient' => User::all()->random()->id_user,
             'id_notification_type' => NotificationType::all()->random()->id_notification_type,
         ];
