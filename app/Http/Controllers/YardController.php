@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Notification;
+use App\Models\NotificationType;
 use App\Models\Proposal;
+use App\Models\User;
 use App\Models\Yard;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\JsonResponse;
@@ -40,6 +42,88 @@ class YardController extends BaseController
                 })
                 ->paginate()
         );
+    }
+
+    /**
+     * Accepte une proposition de chantier.
+     * Désactive les propositions et les notifications relatives.
+     *
+     * @param int $id
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function accept(int $id): JsonResponse
+    {
+        $yard = Yard::query()->findOrFail($id);
+        $proposal = $yard->proposals()
+            ->where('id_recipient', Auth::user()->id_user)
+            ->whereNull('accepted')
+            ->firstOrFail();
+
+        $yard = DB::transaction(function () use ($yard, $proposal) {
+            // maj de la proposition
+            $proposal->update(['accepted' => true]);
+            $proposal->save();
+
+            // récupération des superviseurs de l'entreprise
+            $supervisors = User::query()
+                ->where('type', 'supervisor')
+                ->where('id_enterprise', Auth::user()->id_user)
+                ->get();
+
+            // récupération du superviseur avec le moins de chantiers actifs
+            $supWithLessYard = $supervisors->reduce(function ($carry, $item) {
+                return $carry['yard_count'] < $item['yard_count'] ? $carry : $item;
+            }, $supervisors->first());
+
+            // assignation du superviseur au chantier
+            $yard->id_supervisor = $supWithLessYard->id_user;
+            $yard->save();
+
+            // désactivation des autres propositions
+            Proposal::query()
+                ->where('id_yard', $yard->id_yard)
+                ->where('id_recipient', '!=', Auth::user()->id_user)
+                ->get()
+                ->each(function ($item) {
+                    $item->update(['accepted' => false]);
+                    $item->save();
+                });
+
+            // désactivation des autres notifications
+            Notification::query()
+                ->where('parameters->yard', $yard->id_yard)
+                ->where('id_notification_type', NotificationType::$PROPOSAL)
+                ->get()
+                ->each(function ($item) {
+                    $item->update(['is_read' => true]);
+                    $item->save();
+                });
+
+            return $yard->fresh();
+        });
+
+        return self::updated($yard);
+    }
+
+    /**
+     * Décline une proposition de chantier.
+     *
+     * @param int $id
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function decline(int $id): JsonResponse
+    {
+        $yard = Yard::query()->findOrFail($id);
+        $proposal = $yard->proposals()
+            ->where('id_recipient', Auth::user()->id_user)
+            ->whereNull('accepted')
+            ->firstOrFail();
+
+        // maj de la proposition
+        $proposal->update(['accepted' => false]);
+        $proposal->save();
+
+        return self::updated(null);
     }
 
     /**

@@ -6,8 +6,6 @@ use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Str;
-use Illuminate\Validation\ValidationException;
 
 class UserController extends BaseController
 {
@@ -77,11 +75,7 @@ class UserController extends BaseController
     public function getNotifications(): JsonResponse
     {
         $notifications = Auth::user()
-            ->notifications()              // notification d'un utilisateur
-            ->where(function ($query) {    // non lu => soit 0, soit null
-                $query->whereNull('is_read')
-                    ->orWhere('is_read', false);
-            })
+            ->notifications()
             ->paginate();
         return self::ok($notifications);
     }

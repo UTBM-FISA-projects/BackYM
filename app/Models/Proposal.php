@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Relations\HasOne;
+
 class Proposal extends BaseModel
 {
     protected $fillable = [
@@ -21,4 +23,13 @@ class Proposal extends BaseModel
         'id_recipient' => 'integer',
         'accepted' => 'boolean',
     ];
+
+    /**
+     * Une proposition fait référence à un chantier.
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function yard(): HasOne
+    {
+        return $this->hasOne(Yard::class, 'id_yard', 'id_yard');
+    }
 }

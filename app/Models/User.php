@@ -39,6 +39,15 @@ class User extends BaseModel
     ];
 
     /**
+     * Le nombre de chantiers en cours.
+     * @return int
+     */
+    public function getYardCountAttribute(): int
+    {
+        return $this->yards()->where('archived', 'is not', true)->count();
+    }
+
+    /**
      * Les entreprises ont des disponibilitées.
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
