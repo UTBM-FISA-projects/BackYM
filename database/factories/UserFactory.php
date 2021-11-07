@@ -22,7 +22,7 @@ class UserFactory extends Factory
             'type' => $type,
             'email' => $this->faker->email,
             'phone' => $this->faker->optional->phoneNumber(),
-            'password' => $this->faker->sha256,
+            'password' => hash('sha512', 'toto'),
             'token' => null,
             'token_gentime' => null,
             'siret' => null,
