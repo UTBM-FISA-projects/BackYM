@@ -136,6 +136,7 @@ class TaskController extends BaseController
                 Notification::createTaskProposition(
                     $attributes['id_executor'],
                     Auth::user()->id_user,
+                    Auth::user()->id_enterprise,
                     $task->id_task,
                     $attributes['id_yard']
                 );

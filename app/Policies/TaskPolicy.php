@@ -13,7 +13,7 @@ class TaskPolicy
     {
         $notif = Notification::query()
             ->where('parameters->task', $task->id_task)
-            ->where('recipient', $user->id_user)
+            ->where('id_recipient', $user->id_user)
             ->where('id_notification_type', NotificationType::$TASK_PROPOSAL)
             ->first();
 

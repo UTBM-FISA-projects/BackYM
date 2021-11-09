@@ -97,19 +97,19 @@ create table notification_type
 );
 
 insert into notification_type(id_notification_type, title, template)
-VALUES (1, 'proposition', 'L\'entreprise ${entreprise} vous propose le chantier ${chantier}.'),
+VALUES (1, 'proposition', 'Le client ${project_owner} vous propose le chantier ${yard}.'),
        (2, 'proposition_mission',
-        'L\'entreprise ${entreprise} vous propose la mission ${mission} sur le chantier ${chantier}.'),
-       (3, 'overtime', 'La mission ${mission} à dépassée son temps estimé.');
+        'Le superviseur ${supervisor} (${enterprise}) vous propose la mission ${task} sur le chantier ${yard}.'),
+       (3, 'overtime', 'La mission ${task} à dépassée son temps estimé.');
 
 
 -- NOTIFICATION
 create table notification
 (
     id_notification      bigint unsigned primary key auto_increment,
-    creation             datetime not null default CURRENT_TIMESTAMP,
+    creation             datetime        not null default CURRENT_TIMESTAMP,
     is_read              bool,
-    parameters           json     not null,
+    parameters           json            not null,
     id_recipient         bigint unsigned not null,
     id_notification_type bigint unsigned not null,
     constraint notification_recipient foreign key (id_recipient) references user (id_user) on delete cascade,

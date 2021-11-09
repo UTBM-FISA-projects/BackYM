@@ -22,7 +22,7 @@ class NotificationTypeTableSeeder extends Seeder
         NotificationType::query()->create([
             'id_notification_type' => 2,
             'title' => 'proposition_mission',
-            'template' => 'L\'entreprise ${enterprise} vous propose la mission ${task} sur le chantier ${yard}.',
+            'template' => 'Le superviseur ${supervisor} (${enterprise}) vous propose la mission ${task} sur le chantier ${yard}.',
         ]);
         NotificationType::query()->create([
             'id_notification_type' => 3,
