@@ -148,7 +148,7 @@ class UserController extends BaseController
             'id_enterprise' => 'integer|required_if:type,supervisor|prohibited_if:type,project_owner,enterprise|exists:user,id_user',
         ]);
 
-        $attributes['siret'] = $attributes['siret'] == '' ? null : $attributes['siret'];
+        $attributes['siret'] = $request->json('siret','') == '' ? null : $attributes['siret'];
 
         if ($attributes['siret'] != null && !self::isValidSiret($attributes['siret'])) {
 
