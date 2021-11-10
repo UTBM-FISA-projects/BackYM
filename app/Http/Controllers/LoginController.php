@@ -48,7 +48,7 @@ class LoginController extends BaseController
                 Carbon::now()->addHours(24),
                 '/',
                 null,
-                !env("APP_DEBUG"),
+                false,
                 true,
             )
         );
