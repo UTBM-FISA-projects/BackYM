@@ -15,9 +15,12 @@ class AvailabilityFactory extends Factory
      */
     public function definition(): array
     {
+        $start = $this->faker->dateTimeThisMonth('+21 days');
+        $end = $this->faker->dateTimeInInterval($start, '+8 hour');
+
         return [
-            'start' => $this->faker->dateTime,
-            'end' => $this->faker->dateTime,
+            'start' => $start,
+            'end' => $end,
             'id_user' => User::query()
                 ->where('type', 'enterprise')
                 ->get()

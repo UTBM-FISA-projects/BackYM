@@ -14,6 +14,6 @@ class AvailabilityTableSeeder extends Seeder
      */
     public function run()
     {
-        AvailabilityFactory::times(20)->create();
+        AvailabilityFactory::times(50)->create();
     }
 }
