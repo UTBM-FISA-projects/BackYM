@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Availability;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class UserController extends BaseController
 {
@@ -168,44 +170,6 @@ class UserController extends BaseController
     }
 
     /**
-     * Récupère les employés d'une entreprise
-     * @param int $id
-     * @return JsonResponse
-     * @throws \Illuminate\Auth\Access\AuthorizationException
-     */
-    public function getEmployees(int $id): JsonResponse
-    {
-        $enterprise = User::query()->findOrFail($id);
-
-        $this->authorize('getEmployees', $enterprise);
-
-        $employees = User::query()->where("id_enterprise", $id)->get();
-
-        return self::ok($employees->paginate());
-    }
-
-    /**
-     * Récupère toutes les entreprises selon les filtres donnés.
-     *
-     * @param \Illuminate\Http\Request $request
-     * @return \Illuminate\Http\JsonResponse
-     * @throws \Illuminate\Auth\Access\AuthorizationException
-     */
-    public function getEnterprises(Request $request): JsonResponse
-    {
-        $this->authorize('getEnterprises', User::class);
-
-        $enterprises = User::query()
-            ->where('type', 'enterprise')
-            ->when($request->query('q'), function ($query) use ($request) {
-                return $query->where('name', 'like', "%{$request->query('q')}%");
-            })
-            ->get();
-
-        return self::ok($enterprises->paginate());
-    }
-
-    /**
      * Vérification numéro SIRET d'une entreprise grâce à l'algorithme de Luhn
      * @param string $siret
      * @return bool
@@ -244,5 +208,81 @@ class UserController extends BaseController
 
         return $somme % 10 == 0;
 
+    }
+
+    /**
+     * Récupère les employés d'une entreprise
+     * @param int $id
+     * @return JsonResponse
+     * @throws \Illuminate\Auth\Access\AuthorizationException
+     */
+    public function getEmployees(int $id): JsonResponse
+    {
+        $enterprise = User::query()->findOrFail($id);
+
+        $this->authorize('getEmployees', $enterprise);
+
+        $employees = User::query()->where("id_enterprise", $id)->get();
+
+        return self::ok($employees->paginate());
+    }
+
+    /**
+     * Récupère toutes les entreprises selon les filtres donnés.<br>
+     * Recherche par nom.<br>
+     * Recherche par disponibilitées.<br>
+     *
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\JsonResponse
+     * @throws \Illuminate\Auth\Access\AuthorizationException
+     * @throws \Illuminate\Validation\ValidationException
+     */
+    public function getEnterprises(Request $request): JsonResponse
+    {
+        $this->authorize('getEnterprises', User::class);
+
+        $this->validate($request, [
+            'q' => 'string',
+            'start_date' => 'date|before:end_date',
+            'end_date' => 'date|after:start_date',
+            'hours' => 'regex:/\d{2,}:[0-5]\d/',
+        ]);
+
+        // récupération des paramètres
+        $start = $request->query('start_date', false);
+        $end = $request->query('end_date', false);
+        $hours = $request->query('hours', false);
+
+        // récupération des ID entreprise dont les disponibilités correspondent
+        $enterprises_id = Availability::query()
+            ->when($start and $end, function ($query) use ($start, $end) {
+                return $query
+                    ->whereBetween('start', [$start, $end])
+                    ->whereBetween('end', [$start, $end]);
+            })
+            ->groupBy('id_user')
+            ->when($start and $end and $hours, function ($query) use ($hours) {
+                return $query->having(
+                    DB::raw('SEC_TO_TIME(SUM(TIME_TO_SEC(TIMEDIFF(end, start))))'),
+                    '>',
+                    $hours
+                );
+            })
+            ->pluck('id_user');
+
+        // récupérations des entreprises avec une recherche texte
+        $enterprises = User::query()
+            ->whereIn('id_user', $enterprises_id)
+            ->where('type', 'enterprise')
+            ->when($request->query('q'), function ($query) use ($request) {
+                return $query->where('name', 'like', "%{$request->query('q')}%");
+            });
+
+        return self::ok($enterprises->paginate(
+            $request->query('perPage', 15),
+            ['*'],
+            'page',
+            $request->query('page', 1)
+        ));
     }
 }
