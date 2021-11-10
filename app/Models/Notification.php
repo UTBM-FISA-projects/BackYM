@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Notification extends BaseModel
@@ -41,6 +42,7 @@ class Notification extends BaseModel
         'yard' => Yard::class,
         'project_owner' => User::class,
         'enterprise' => User::class,
+        'supervisor' => User::class,
         'task' => Task::class,
     ];
 
@@ -60,6 +62,21 @@ class Notification extends BaseModel
         }
 
         return $params;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    protected static function booted()
+    {
+        parent::booted();
+        static::addGlobalScope('unread', function (Builder $builder) {
+            // Notifications non lu => soit 0, soit null
+            $builder->where(function ($query) {
+                $query->whereNull('is_read')
+                    ->orWhere('is_read', false);
+            });
+        });
     }
 
     /**
@@ -85,16 +102,18 @@ class Notification extends BaseModel
      * Créé une notification pour une proposition de mission.
      *
      * @param int $recipient
+     * @param int $supervisor
      * @param int $enterprise
      * @param int $task
      * @param int $yard
      */
-    public static function createTaskProposition(int $recipient, int $enterprise, int $task, int $yard)
+    public static function createTaskProposition(int $recipient, int $supervisor, int $enterprise, int $task, int $yard)
     {
         $notif = new Notification();
         $notif->id_notification_type = NotificationType::$TASK_PROPOSAL;
         $notif->id_recipient = $recipient;
         $notif->parameters = [
+            'supervisor' => $supervisor,
             'enterprise' => $enterprise,
             'task' => $task,
             'yard' => $yard,

@@ -131,4 +131,14 @@ class Yard extends BaseModel
             'id_supervisor'
         );
     }
+
+    /**
+     * Un chantier a des propositions.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function proposals(): HasMany
+    {
+        return $this->hasMany(Proposal::class, 'id_yard', 'id_yard');
+    }
 }

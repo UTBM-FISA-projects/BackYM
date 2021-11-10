@@ -45,6 +45,6 @@ class UserPolicy
 
     public function getEnterprises(User $user): bool
     {
-        return $user->type === 'project_owner';
+        return in_array($user->type, ['project_owner', 'supervisor']);
     }
 }

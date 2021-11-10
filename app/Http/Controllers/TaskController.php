@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Misc\Time;
 use App\Models\Notification;
+use App\Models\NotificationType;
 use App\Models\Task;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -13,6 +14,36 @@ use InvalidArgumentException;
 
 class TaskController extends BaseController
 {
+    /**
+     * Accepte une proposition de mission.
+     *
+     * @param int $id
+     * @return \Illuminate\Http\JsonResponse
+     * @throws \Illuminate\Auth\Access\AuthorizationException
+     */
+    public function accept(int $id): JsonResponse
+    {
+        $task = Task::query()->findOrFail($id);
+
+        $this->authorize('accept', $task);
+
+        // UX : désactivation des autres notifications
+        Notification::query()
+            ->where('parameters->task', $task->id_yard)
+            ->where('id_notification_type', NotificationType::$TASK_PROPOSAL)
+            ->get()
+            ->each(function ($item) {
+                $item->update(['is_read' => true]);
+                $item->save();
+            });
+
+        // ajout de l'exécutant à la mission
+        $task->id_executor = Auth::user()->id_user;
+        $task->save();
+
+        return self::updated($task);
+    }
+
     /**
      * Met à jour une mission selon son ID.
      *
@@ -105,6 +136,7 @@ class TaskController extends BaseController
                 Notification::createTaskProposition(
                     $attributes['id_executor'],
                     Auth::user()->id_user,
+                    Auth::user()->id_enterprise,
                     $task->id_task,
                     $attributes['id_yard']
                 );

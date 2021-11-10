@@ -5,6 +5,10 @@
 $router->group(['middleware' => 'auth'], function () use ($router) {
     $router->get('/yards/{id:[1-9]\d*}/tasks', ['uses' => 'YardController@getTasks']);
 
+    $router->put('/yards/{id:[1-9]\d*}/accept', ['uses' => 'YardController@accept']);
+
+    $router->put('/yards/{id:[1-9]\d*}/decline', ['uses' => 'YardController@decline']);
+
     $router->put('/yards/{id:[1-9]\d*}', ['uses' => 'YardController@put']);
 
     $router->post('/yards', ['uses' => 'YardController@post']);
