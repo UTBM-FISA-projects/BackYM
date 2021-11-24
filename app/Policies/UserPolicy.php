@@ -3,14 +3,24 @@
 namespace App\Policies;
 
 use App\Models\User;
+use App\Models\Yard;
 
 class UserPolicy
 {
     public function show($authUser, User $requestedUser): bool
     {
-        return $authUser->id_user === $requestedUser->id_user
-            || $authUser->id_enterprise === $requestedUser->id_user
-            || $authUser->id_user === $requestedUser->id_enterprise;
+        $entreprises_id = Yard::query()
+            ->where('id_project_owner', $authUser->id_user)
+            ->get()
+            ->map(function ($yard) {
+                return $yard->supervisor->id_enterprise;
+            })
+            ->unique();
+
+        return $authUser->id_user === $requestedUser->id_user        // se demande lui-même
+            || $authUser->id_enterprise === $requestedUser->id_user  // superviseur demande l'entreprise
+            || $authUser->id_user === $requestedUser->id_enterprise  // entreprise demande un employé
+            || $entreprises_id->contains($requestedUser->id_user);   // demande une entreprise gérante de chantier
     }
 
     public function getYards($authUser, User $requestedUser): bool

@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class User extends BaseModel
 {
@@ -45,6 +46,15 @@ class User extends BaseModel
     public function getYardCountAttribute(): int
     {
         return $this->yards()->where('archived', 'is not', true)->count();
+    }
+
+    /**
+     * Un superviseur a une entreprise.
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function enterprise(): HasOne
+    {
+        return $this->hasOne(User::class, 'id_user', 'id_enterprise');
     }
 
     /**
