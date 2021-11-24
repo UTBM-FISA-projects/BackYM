@@ -50,7 +50,7 @@ class UserController extends BaseController
 
         $this->authorize('getYards', $user);
 
-        return self::ok($user->yards->paginate());
+        return self::ok($user->yards()->orderBy('archived')->orderBy('name')->paginate());
     }
 
     /**
