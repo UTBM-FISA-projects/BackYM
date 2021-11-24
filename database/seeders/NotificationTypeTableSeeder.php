@@ -27,7 +27,7 @@ class NotificationTypeTableSeeder extends Seeder
         NotificationType::query()->create([
             'id_notification_type' => 3,
             'title' => 'overtime',
-            'template' => 'La mission ${task} à dépassée son temps estimé.',
+            'template' => 'La mission ${task} a dépassée son temps estimé.',
         ]);
     }
 }
