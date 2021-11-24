@@ -69,11 +69,25 @@ class TaskController extends BaseController
             'end_planned_date' => 'nullable|date|after:start_planned_date',
             'supervisor_validated' => 'nullable|boolean',
             'executor_validated' => 'nullable|boolean',
-            'id_executor' => 'integer|exists:user,id_user',
+            'id_executor' => 'nullable|integer|exists:user,id_user',
         ]);
 
         $task = DB::transaction(function () use ($attributes, $task) {
             $task->update($attributes);
+
+            if (array_key_exists('id_executor', $attributes) && $attributes['id_executor'] == null) {
+                $task->id_executor = null;
+            } elseif (isset($attributes['id_executor'])) {
+                Notification::createTaskProposition(
+                    $attributes['id_executor'],
+                    Auth::user()->id_user,
+                    Auth::user()->id_enterprise,
+                    $task->id_task,
+                    $task->id_yard
+                );
+            }
+
+            $task->save();
             $task = $task->fresh();
 
             // si le temps passé n'a pas changé on ne crée pas de nouvelles notifications
@@ -87,7 +101,7 @@ class TaskController extends BaseController
 
                 if ($time_spent->isGreater($estimated_time)) {
                     // on notifie le superviseur
-                    Notification::createTaskOvertime($task->yard()->id_supervisor, $task->id_task);
+                    Notification::createTaskOvertime($task->yard->id_supervisor, $task->id_task);
                     // on notifie l'executant
                     Notification::createTaskOvertime($task->id_executor, $task->id_task);
                 }
@@ -152,7 +166,7 @@ class TaskController extends BaseController
 
                 if ($spent->isGreater($estimated)) {
                     // on notifie le superviseur
-                    Notification::createTaskOvertime($task->yard()->id_supervisor, $task->id_task);
+                    Notification::createTaskOvertime($task->yard->id_supervisor, $task->id_task);
                     // on notifie l'executant
                     Notification::createTaskOvertime($task->id_executor, $task->id_task);
                 }
