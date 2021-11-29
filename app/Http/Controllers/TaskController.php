@@ -73,6 +73,15 @@ class TaskController extends BaseController
         ]);
 
         $task = DB::transaction(function () use ($attributes, $task) {
+            // prestataire
+            if (Auth::user()->type === 'enterprise') {
+                if (isset($attributes['executor_validated'])) {
+                    $task->executor_validated = $attributes['executor_validated'];
+                    $task->save();
+                }
+                return $task;
+            }
+
             $task->update($attributes);
 
             if (array_key_exists('id_executor', $attributes) && $attributes['id_executor'] == null) {
