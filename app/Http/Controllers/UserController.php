@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Availability;
 use App\Models\User;
+use App\Models\Yard;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -49,6 +50,16 @@ class UserController extends BaseController
         $user = User::query()->findOrFail($id);
 
         $this->authorize('getYards', $user);
+
+        if ($user->type === 'enterprise') {
+            return self::ok(
+                Yard::query()
+                    ->whereHas('tasks', function ($query) {
+                        $query->where('id_executor', Auth::user()->id_user);
+                    })
+                    ->paginate()
+            );
+        }
 
         return self::ok($user->yards()->orderBy('archived')->orderBy('name')->paginate());
     }
@@ -239,8 +250,6 @@ class UserController extends BaseController
      */
     public function getEnterprises(Request $request): JsonResponse
     {
-        $this->authorize('getEnterprises', User::class);
-
         $this->validate($request, [
             'q' => 'string',
             'start_date' => 'date|before:end_date',

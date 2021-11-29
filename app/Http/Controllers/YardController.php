@@ -37,6 +37,9 @@ class YardController extends BaseController
         return self::ok(
             $yard
                 ->tasks
+                ->when(Auth::user()->type === 'enterprise', function (Collection $query) {
+                    return $query->where('id_executor', Auth::user()->id_user);
+                })
                 ->when($state, function (Collection $query, $state) {
                     return $query->where('state', $state);
                 })
